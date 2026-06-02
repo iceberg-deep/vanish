@@ -22,6 +22,14 @@ _METHOD_STEPS = {
         "Click the Submit or Remove button.",
         "Open your email inbox, find the new message from {broker}, and click the confirmation link inside it. If you don't see it, look in your Spam or Junk folder.",
     ],
+    # Aggregators match you on your name/address, not a 'listing' you look up.
+    "web-form-noprofile": [
+        "Open your web browser (Chrome, Safari, or Edge) and go to this address: {url}",
+        "Fill in the form with your full name, email ({email}), and home address.",
+        "Tick the 'I'm not a robot' box and finish any little picture puzzle it shows.",
+        "Click the Submit button.",
+        "If they email you a confirmation link, open your inbox and click it (check Spam too).",
+    ],
     "web-form-phone": [
         "Open your web browser and go to: {url}",
         "Type your full name in the search box and press Enter; find and open the entry that is you.",
@@ -127,7 +135,10 @@ def build_report(name=None, email=None):
         n += 1
         A("### %d. %s\n" % (n, b["name"]))
         A("- [ ] **Done with %s**\n" % b["name"])
-        steps = _METHOD_STEPS.get(b["method"], _GENERIC_STEPS)
+        method = b["method"]
+        if method == "web-form" and "profile_url" not in b["needs"]:
+            method = "web-form-noprofile"
+        steps = _METHOD_STEPS.get(method, _GENERIC_STEPS)
         for i, step in enumerate(steps, 1):
             A("%d. %s" % (i, _fill(step, b, email)))
         if b.get("opt_out_email"):

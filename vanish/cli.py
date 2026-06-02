@@ -358,9 +358,14 @@ def _automate_delivery(broker, letter, use_browser, page_already_open=False):
 
 
 # Remaining human-only steps by broker method (CAPTCHA/email/phone defenses).
+# The web-form steps differ by whether the broker matches you on a *listing URL*
+# (people-search sites) or on your *name/address* directly (aggregators).
 _METHOD_STEPS = {
     "web-form": ["Find your listing, paste its URL into the form.",
                  "Solve the CAPTCHA and submit."],
+    "web-form-noprofile": ["Fill in the form with your name and email "
+                           "(and address if it asks).",
+                           "Solve the CAPTCHA and submit."],
     "web-form-phone": ["Submit the form.",
                        "Complete the phone verification call when prompted."],
     "web-form-account": ["Create/verify control of the listing as prompted.",
@@ -372,6 +377,15 @@ _METHOD_STEPS = {
     "browser-optout": ["Use the on-page cookie/registry controls to opt out.",
                        "Clear ad cookies afterward."],
 }
+
+
+def _method_steps(broker):
+    """Steps for a broker, picking the right web-form variant: listing-URL
+    removal vs. name/address removal (aggregators have no listing to find)."""
+    method = broker["method"]
+    if method == "web-form" and "profile_url" not in broker["needs"]:
+        method = "web-form-noprofile"
+    return _METHOD_STEPS.get(method, [])
 
 
 def cmd_cleanse(args):
@@ -435,9 +449,9 @@ def cmd_cleanse(args):
             phone=args.phone, address=args.address, as_agent=args.as_agent)
         auto = _automate_delivery(broker, letter, use_browser,
                                   page_already_open=page_opened)
-        for n, step in enumerate(_METHOD_STEPS.get(broker["method"], []), 1):
+        for n, step in enumerate(_method_steps(broker), 1):
             print("  " + paint("%d." % n, C.BRIGHT_CYAN) + " " + step)
-        if "email" in str(broker["needs"]):
+        if "email" in broker["needs"]:
             print("  " + paint("→ watch for a confirmation email and click the link.", C.YELLOW))
 
         ans = _ask("Mark this submitted?", ["yes", "no", "skip"], "no")
@@ -512,7 +526,7 @@ def cmd_guide(args):
         print(ui.err("Couldn't write the guide: %s" % exc))
         return 1
 
-    lines = report.count("\n") + 1
+    lines = len(report.splitlines())
     print(ui.header("Your removal guide is ready"))
     print("  " + ui.ok("Saved to " + paint(path, C.BRIGHT_WHITE)))
     print("  " + ui.field("length", "%d lines, plain English, with checkboxes" % lines))

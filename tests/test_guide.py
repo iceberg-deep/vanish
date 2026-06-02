@@ -40,3 +40,26 @@ def test_report_is_plain_string_not_written_anywhere():
     # build_report must be pure: returns text, touches no files/db.
     out = guide.build_report()
     assert isinstance(out, str) and len(out) > 500
+
+
+def _section(report, broker_name):
+    """Return just one broker's block from the report."""
+    start = report.index(broker_name)
+    rest = report[start:]
+    nxt = rest.find("\n### ", 1)
+    return rest if nxt == -1 else rest[:nxt]
+
+
+def test_aggregator_section_does_not_tell_you_to_find_a_listing():
+    # Acxiom matches on name/address — instructing a reader to "find your
+    # listing and copy the web address" would be a dead end (regression).
+    r = guide.build_report(email="jane@example.com")
+    acx = _section(r, "Acxiom").lower()
+    assert "copy the web address" not in acx
+    assert "home address" in acx
+
+
+def test_people_search_section_still_uses_listing_lookup():
+    r = guide.build_report(email="jane@example.com")
+    spokeo = _section(r, "### 1. Spokeo").lower()
+    assert "web address" in spokeo  # listing-URL flow preserved

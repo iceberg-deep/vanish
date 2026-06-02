@@ -134,3 +134,16 @@ def test_guide_stdout_prints_report(capsys):
     rc, out = run(["guide", "--stdout"], capsys)
     assert rc == 0
     assert "Removing Yourself From the Internet" in out
+
+
+# --- regression: web-form steps must match the broker's match-method ----- #
+
+def test_method_steps_adapt_to_profile_url(capsys):
+    from vanish import brokers
+    spokeo = brokers.get("spokeo")   # matches on a listing URL
+    acxiom = brokers.get("acxiom")   # matches on name/address (no listing)
+    spokeo_steps = " ".join(cli._method_steps(spokeo)).lower()
+    acxiom_steps = " ".join(cli._method_steps(acxiom)).lower()
+    assert "listing" in spokeo_steps
+    assert "listing" not in acxiom_steps  # don't tell aggregator users to "find your listing"
+    assert "name" in acxiom_steps
