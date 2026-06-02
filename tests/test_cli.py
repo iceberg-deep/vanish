@@ -156,6 +156,45 @@ def test_guide_stdout_prints_report(capsys):
     assert "Removing Yourself From the Internet" in out
 
 
+# --- verify (link checker; network stubbed) ------------------------------ #
+
+def test_verify_records_status_and_reports(capsys, monkeypatch):
+    monkeypatch.setattr(cli.audit, "check_url", lambda url, timeout=12: {
+        "status": "ok", "code": 200, "final_url": url, "redirected": False})
+    rc, out = run(["verify", "--broker", "spokeo"], capsys)
+    assert rc == 0
+    assert "reachable" in out
+    assert db.get_verifications()["spokeo"]["status"] == "ok"
+
+
+def test_verify_blocked_is_not_a_failure(capsys, monkeypatch):
+    monkeypatch.setattr(cli.audit, "check_url", lambda url, timeout=12: {
+        "status": "blocked", "code": 403, "final_url": url, "redirected": False})
+    rc, out = run(["verify", "--broker", "spokeo"], capsys)
+    assert rc == 0  # blocked is inconclusive, not a failure
+    assert "manual check" in out
+
+
+def test_verify_dead_fails_run(capsys, monkeypatch):
+    monkeypatch.setattr(cli.audit, "check_url", lambda url, timeout=12: {
+        "status": "dead", "code": 404, "final_url": url, "redirected": False})
+    rc, _ = run(["verify", "--broker", "spokeo"], capsys)
+    assert rc == 1  # genuinely-dead links are an actionable failure
+
+
+def test_verify_unknown_broker(capsys):
+    rc, _ = run(["verify", "--broker", "does-not-exist"], capsys)
+    assert rc == 2
+
+
+def test_brokers_shows_verification_overlay(capsys, monkeypatch):
+    monkeypatch.setattr(cli.audit, "check_url", lambda url, timeout=12: {
+        "status": "dead", "code": 404, "final_url": url, "redirected": False})
+    run(["verify", "--broker", "spokeo"], capsys)
+    _, out = run(["brokers", "--category", "people-search"], capsys)
+    assert "DEAD" in out  # the local overlay surfaces in the listing
+
+
 # --- regression: web-form steps must match the broker's match-method ----- #
 
 def test_method_steps_adapt_to_profile_url(capsys):

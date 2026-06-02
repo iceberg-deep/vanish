@@ -55,7 +55,20 @@ vanish brokers --category data-aggregator
 vanish brokers --category ad-tech
 ```
 
-Lists ~15 known brokers (Spokeo, Whitepages, BeenVerified, Radaris, MyLife, PeopleFinders, Intelius, TruePeopleSearch, FastPeopleSearch, Instant Checkmate, TruthFinder, Acxiom, LexisNexis, Oracle BlueKai, Epsilon) with opt-out URL, method, what each needs from you, and notes.
+Lists ~20 known brokers — people-search sites plus high-impact aggregators that feed them (Acxiom, LexisNexis, Epsilon, Oracle, CoreLogic/Cotality, LiveRamp, Equifax, Experian, Data Axle) — with opt-out URL, method, what each needs, notes, and **provenance**: a `source`, a `verified` flag, and a `last_verified` date. Each entry shows a status badge: `VERIFIED` (link checked, with date), `CHECK` (anti-bot wall — the page likely exists but blocks automated checks), `DEAD` (link is gone), or `UNVERIFIED` (not checked yet).
+
+Nothing in the registry asserts a URL works from memory — every link is either checked by `vanish verify` or clearly flagged. Aggregator entries are seeded from public sources (incl. California's CPPA DELETE Act registered-data-broker list) and marked with their `source`.
+
+### `verify` — live-check the registry's own links
+
+```bash
+vanish verify                       # GET every opt-out URL, record status + date
+vanish verify --broker spokeo       # just one
+vanish verify --category data-aggregator
+vanish verify --write               # bake results into the registry (maintainer use)
+```
+
+A plain GET to each `opt_out_url`. It **resolves nothing about people** — it only asks whether your registry's own links are alive today — and records the result to a local overlay (shown in `vanish brokers`). It honestly separates `blocked` (HTTP 401/403/429 anti-bot walls — *not* counted as dead) from genuinely `dead` (404/5xx) links, so a working-but-bot-protected opt-out page is never mistaken for a broken one. Only genuinely-dead links fail the run.
 
 ### `audit` — check your own identifiers
 
@@ -226,7 +239,7 @@ Only two things ever leave your machine, and only when you ask: (a) your email a
 
 ## Data & privacy
 
-- Local store: `~/.vanish/vanish.db` (SQLite, `0600`, in a `0700` dir) — just `requests` and `audit_log` tables.
+- Local store: `~/.vanish/vanish.db` (SQLite, `0600`, in a `0700` dir) — `requests`, `audit_log`, and `verifications` (your local link-check results; broker id + HTTP status only, no PII).
 - `requests` holds only `broker / template / status / created / updated`. **No name, email, address, or any identifier is stored anywhere** — inspect the schema and you'll find no such columns.
 - Identifiers exist only in memory during letter generation.
 - Set `NO_COLOR=1` to disable colored output.

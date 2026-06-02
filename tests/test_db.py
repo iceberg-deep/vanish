@@ -92,3 +92,28 @@ def test_db_file_is_owner_only():
     db.add_request("spokeo", "Spokeo", "ccpa")
     mode = oct(os.stat(db.DB_PATH).st_mode & 0o777)
     assert mode == "0o600"
+
+
+# --- verification overlay ------------------------------------------------- #
+
+def test_record_and_get_verification():
+    db.record_verification("spokeo", "ok", 200, "https://x")
+    ov = db.get_verifications()
+    assert ov["spokeo"]["status"] == "ok"
+    assert ov["spokeo"]["http_code"] == 200
+    assert ov["spokeo"]["checked_at"]
+
+
+def test_record_verification_upserts():
+    db.record_verification("acme", "dead", 404, "https://x")
+    db.record_verification("acme", "ok", 200, "https://x")  # later check wins
+    ov = db.get_verifications()
+    assert ov["acme"]["status"] == "ok"
+    assert len([k for k in ov if k == "acme"]) == 1
+
+
+def test_verifications_table_has_no_identifier_columns():
+    cols = _columns("verifications")
+    assert cols == {"broker_id", "status", "http_code", "final_url", "checked_at"}
+    forbidden = {"name", "email", "phone", "address"}
+    assert not (cols & forbidden)

@@ -21,6 +21,30 @@ from .ui import C, paint
 # --------------------------------------------------------------------------- #
 # brokers
 # --------------------------------------------------------------------------- #
+def _verify_badge(broker, overlay):
+    """A short verified/unverified marker for a broker, merging the registry's
+    curated `verified` flag with the user's local `vanish verify` overlay."""
+    ov = overlay.get(broker["id"])
+    if ov:
+        when = ov["checked_at"][:10]
+        if ov["status"] == "ok":
+            return ui.status_badge("verified") + paint("  checked %s" % when, C.GREY)
+        if ov["status"] == "blocked":
+            return (paint(" CHECK", C.BOLD, C.YELLOW)
+                    + paint("  HTTP %s anti-bot, verify by hand (%s)"
+                            % (ov["http_code"], when), C.GREY))
+        if ov["status"] == "dead":
+            return (paint(" DEAD ", C.BOLD, C.BRIGHT_RED)
+                    + paint("  HTTP %s, checked %s" % (ov["http_code"], when), C.GREY))
+        return (paint(" ERR  ", C.BOLD, C.YELLOW)
+                + paint("  unreachable, checked %s" % when, C.GREY))
+    if broker.get("verified"):
+        return ui.status_badge("verified") + paint(
+            "  %s" % (broker.get("last_verified") or ""), C.GREY)
+    return paint(" UNVERIFIED ", C.BOLD, C.YELLOW) + paint(
+        "  run: vanish verify", C.GREY)
+
+
 def cmd_brokers(args):
     rows = brokers.query(args.category)
     if not rows:
@@ -28,11 +52,16 @@ def cmd_brokers(args):
         print(ui.info("Known categories: " + ", ".join(brokers.categories())))
         return 1
 
+    overlay = db.get_verifications()
     title = "Data broker registry"
     if args.category:
         title += "  (" + ui.category_badge(args.category) + ")"
     print(ui.header(title))
-    print("  " + paint("%d entries" % len(rows), C.GREY))
+    unver = sum(1 for b in rows if not b.get("verified")
+                and b["id"] not in overlay)
+    print("  " + paint("%d entries" % len(rows), C.GREY)
+          + (paint("  •  %d unverified (run: vanish verify)" % unver, C.YELLOW)
+             if unver else ""))
 
     for b in rows:
         bullet = paint("●", ui.CATEGORY_COLOR.get(b["category"], C.WHITE))
@@ -40,12 +69,86 @@ def cmd_brokers(args):
         bid = paint("[" + b["id"] + "]", C.GREY)
         print("\n  " + bullet + " " + name + " " + bid)
         print("    " + ui.field("category", ui.category_badge(b["category"])))
+        print("    " + ui.field("status", _verify_badge(b, overlay)))
         print("    " + ui.field("method", b["method"]))
         print("    " + ui.field("opt-out", paint(b["opt_out_url"], C.UNDERLINE, C.BRIGHT_BLUE)))
         print("    " + ui.field("needs", ", ".join(b["needs"])))
+        print("    " + ui.field("source", paint(b.get("source", "—"), C.DIM)))
         print("    " + ui.field("notes", paint(b["notes"], C.DIM)))
     print()
     return 0
+
+
+# --------------------------------------------------------------------------- #
+# verify  (live link-check of the registry's own opt-out URLs)
+# --------------------------------------------------------------------------- #
+def cmd_verify(args):
+    registry = brokers.load_brokers()
+    if args.broker:
+        selected = [b for b in registry if b["id"] == args.broker]
+        if not selected:
+            print(ui.err("Unknown broker id: %r" % args.broker))
+            return 2
+    else:
+        selected = [b for b in registry if not args.category
+                    or b["category"] == args.category]
+
+    print(ui.header("Verify — live-checking %d opt-out link(s)" % len(selected)))
+    print("  " + paint("Plain GETs to your registry's own URLs. Resolves nothing "
+                       "about people; records HTTP status + date.", C.GREY))
+
+    tally = {"ok": 0, "blocked": 0, "dead": 0, "error": 0, "skip": 0}
+    for b in selected:
+        url = b.get("opt_out_url")
+        label = paint(("{:<16}").format(b["id"]), C.BRIGHT_WHITE)
+        if not url:
+            tally["skip"] += 1
+            print("    " + paint(" SKIP ", C.BOLD, C.GREY) + " " + label
+                  + paint("no opt_out_url", C.GREY))
+            continue
+        res = audit.check_url(url, timeout=args.timeout)
+        checked = db.record_verification(b["id"], res["status"], res.get("code"),
+                                         res.get("final_url"))
+        if res["status"] == "ok":
+            tally["ok"] += 1
+            extra = (paint("  → %s" % res["final_url"], C.GREY)
+                     if res.get("redirected") else "")
+            print("    " + ui.status_badge("verified") + " " + label
+                  + paint("HTTP %s" % res["code"], C.GREY) + extra)
+            if args.write:
+                b["verified"] = True
+                b["last_verified"] = checked[:10]
+        elif res["status"] == "blocked":
+            tally["blocked"] += 1
+            print("    " + paint(" CHECK", C.BOLD, C.YELLOW) + " " + label
+                  + paint("HTTP %s — anti-bot wall, page likely exists; "
+                          "verify by hand" % res["code"], C.GREY))
+            # inconclusive: don't mark verified, don't condemn the URL
+        elif res["status"] == "dead":
+            tally["dead"] += 1
+            print("    " + paint(" DEAD ", C.BOLD, C.BRIGHT_RED) + " " + label
+                  + paint("HTTP %s — fix or remove this URL" % res["code"], C.GREY))
+            if args.write:
+                b["verified"] = False
+        else:
+            tally["error"] += 1
+            print("    " + paint(" ERR  ", C.BOLD, C.YELLOW) + " " + label
+                  + paint("unreachable (%s)" % res.get("detail", "network"), C.GREY))
+
+    print("\n  " + ui.info(
+        "%d reachable · %d need manual check · %d dead · %d unreachable · %d skipped"
+        % (tally["ok"], tally["blocked"], tally["dead"], tally["error"], tally["skip"])))
+    if args.write:
+        try:
+            brokers.save_brokers(registry)
+            print("  " + ui.ok("Baked results into the registry (verified/last_verified)."))
+        except OSError as exc:
+            print("  " + ui.warn("Could not write the registry (read-only?): %s" % exc))
+            print("  " + paint("Results are still saved to your local overlay.", C.GREY))
+    print()
+    # Only genuinely-dead links are an actionable failure; blocked/error are
+    # inconclusive (anti-bot walls, transient network) and don't fail the run.
+    return 1 if tally["dead"] else 0
 
 
 # --------------------------------------------------------------------------- #
@@ -596,6 +699,19 @@ def build_parser():
     p_brokers.add_argument(
         "--category", choices=brokers.categories(), help="filter by category")
     p_brokers.set_defaults(func=cmd_brokers)
+
+    p_verify = sub.add_parser(
+        "verify", help="live-check the registry's opt-out URLs (records status)")
+    p_verify.add_argument("--broker", help="verify a single broker id")
+    p_verify.add_argument("--category", choices=brokers.categories(),
+                          help="limit to one category")
+    p_verify.add_argument("--timeout", type=int, default=12,
+                          help="per-URL timeout in seconds (default 12)")
+    p_verify.add_argument(
+        "--write", action="store_true",
+        help="bake results into the bundled registry (maintainer use; needs a "
+             "writable install)")
+    p_verify.set_defaults(func=cmd_verify)
 
     p_audit = sub.add_parser(
         "audit", help="audit your own email / usernames",

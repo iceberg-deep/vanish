@@ -95,6 +95,40 @@ def has_hibp_key():
     return bool(os.environ.get("HIBP_API_KEY"))
 
 
+def check_url(url, timeout=12):
+    """Live-check a broker opt-out URL. Resolves nothing about people — it only
+    asks whether the registry's own link is alive today.
+
+    Returns a dict with: status, code, final_url, and `redirected`. Status is:
+      "ok"      — 2xx, the link resolves
+      "blocked" — 401/403/429: anti-bot wall. The page likely EXISTS but won't
+                  answer an automated check, so we don't call it dead (that
+                  would be a false negative) — it needs a manual eyeball.
+      "dead"    — 404/410/other 4xx/5xx: genuinely missing or moved.
+      "error"   — network failure / timeout.
+    `redirected` (landed elsewhere) is informational, not a failure — sites
+    legitimately redirect http->https or add a trailing slash.
+    """
+    headers = {"user-agent":
+               "Mozilla/5.0 (compatible; vanish-link-check/0.1; +local-only)"}
+    try:
+        resp = requests.get(url, headers=headers, timeout=timeout,
+                            allow_redirects=True)
+    except requests.RequestException as exc:
+        return {"status": "error", "code": None, "final_url": None,
+                "redirected": False, "detail": str(exc)}
+    code = resp.status_code
+    final = resp.url
+    if 200 <= code < 300:
+        status = "ok"
+    elif code in (401, 403, 429):
+        status = "blocked"
+    else:
+        status = "dead"
+    return {"status": status, "code": code, "final_url": final,
+            "redirected": final.rstrip("/") != url.rstrip("/")}
+
+
 def check_hibp(email, timeout=15):
     """Query Have I Been Pwned for breaches of `email`.
 

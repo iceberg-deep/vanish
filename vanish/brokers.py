@@ -12,15 +12,32 @@ except ImportError:  # pragma: no cover - Python 3.8 fallback
 _DATA_FILENAME = "brokers.json"
 
 
-def _load_raw():
+def registry_path():
+    """Filesystem path to the bundled brokers.json (for read/write)."""
     if _res_files is not None:
-        path = _res_files("vanish").joinpath("data", _DATA_FILENAME)
-        with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
-    # Fallback: locate alongside this module.
+        try:
+            return str(_res_files("vanish").joinpath("data", _DATA_FILENAME))
+        except Exception:
+            pass
     here = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(here, "data", _DATA_FILENAME), encoding="utf-8") as fh:
+    return os.path.join(here, "data", _DATA_FILENAME)
+
+
+def _load_raw():
+    with open(registry_path(), encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def save_brokers(brokers):
+    """Write the full broker list back to the registry file (maintainer use).
+
+    Used by `vanish verify --write` to bake live-check results into the shipped
+    registry. Raises OSError if the file isn't writable (e.g. a read-only
+    site-packages install) — callers handle that gracefully.
+    """
+    with open(registry_path(), "w", encoding="utf-8") as fh:
+        json.dump({"brokers": brokers}, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
 
 
 def load_brokers():
