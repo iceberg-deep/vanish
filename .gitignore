@@ -15,6 +15,8 @@ dist/
 .env
 .env.*
 *.env
+# ...except the committed template, which holds no value.
+!.env.example
 
 # Local vanish runtime data (never belongs in the repo)
 .vanish/

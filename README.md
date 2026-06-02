@@ -101,6 +101,8 @@ The breach-by-email lookup uses the official [Have I Been Pwned API](https://hav
 
 The username probe and everything else in vanish need **no key** and make no such transmission — only the email breach check does.
 
+The key comes from the environment, or from an untracked local `.env` you source yourself (see [`.env.example`](.env.example)) — **never a CLI flag, and never committed**. `.env` is gitignored, GitHub push protection is enabled, and a [gitleaks pre-commit hook](.pre-commit-config.yaml) guards against accidental commits locally.
+
 Platforms probed: github, instagram, x, tiktok, reddit, pinterest, twitch, medium, youtube, facebook. (Instagram/X/Reddit/Twitch/Medium serve a 200 shell for missing handles, so those are honestly flagged `CHECK` rather than guessed.)
 
 ### `request` — generate a removal letter
