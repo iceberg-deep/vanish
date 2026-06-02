@@ -34,3 +34,22 @@ jobs:
         # The suite is hermetic: the DB is redirected to a tmp dir and the
         # network is blocked in conftest, so no secrets or HIBP key are needed.
         run: pytest -q
+
+  # Single aggregating gate. Branch protection requires THIS one check, so the
+  # rule stays stable even if the Python matrix above changes. It passes only
+  # when every matrix job succeeded.
+  ci-success:
+    name: ci-success
+    needs: [test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all matrix jobs to have succeeded
+        run: |
+          result="${{ needs.test.result }}"
+          echo "test matrix result: $result"
+          if [ "$result" != "success" ]; then
+            echo "::error::CI gate failed — one or more test jobs did not succeed"
+            exit 1
+          fi
+          echo "All matrix jobs passed."
