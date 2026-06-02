@@ -306,6 +306,208 @@
       "source": "California CPPA registered data broker (DELETE Act); opt-out URL from public lists",
       "verified": true,
       "last_verified": "2026-06-02"
+    },
+    {
+      "id": "peekyou",
+      "name": "PeekYou",
+      "category": "people-search",
+      "opt_out_url": "https://www.peekyou.com/about/contact/optout/",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Aggregates social profiles into a people page. Submit the opt-out form with your PeekYou URL.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "thatsthem",
+      "name": "ThatsThem",
+      "category": "people-search",
+      "opt_out_url": "https://thatsthem.com/optout",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "Free people-search. Submit your record URL.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "nuwber",
+      "name": "Nuwber",
+      "category": "people-search",
+      "opt_out_url": "https://nuwber.com/removal/link",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "People-search; submit your profile link, then verify by email.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "clustrmaps",
+      "name": "ClustrMaps",
+      "category": "people-search",
+      "opt_out_url": "https://clustrmaps.com/bl/opt-out",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Address and people aggregator. Submit your record URL. (Couldn't auto-verify from this network; re-run `vanish verify`.)",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "advancedbackgroundchecks",
+      "name": "AdvancedBackgroundChecks",
+      "category": "people-search",
+      "opt_out_url": "https://www.advancedbackgroundchecks.com/removal",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "People-search; submit your record URL to suppress.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "searchpeoplefree",
+      "name": "SearchPeopleFree",
+      "category": "people-search",
+      "opt_out_url": "https://www.searchpeoplefree.com/opt-out",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Free people-search. Paste your record URL.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "usphonebook",
+      "name": "USPhoneBook",
+      "category": "people-search",
+      "opt_out_url": "https://www.usphonebook.com/opt-out",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Phone/people lookup. Submit your listing URL.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "checkpeople",
+      "name": "CheckPeople",
+      "category": "people-search",
+      "opt_out_url": "https://www.checkpeople.com/opt-out",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "People-search; submit your record URL.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "transunion",
+      "name": "TransUnion",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.transunion.com/consumer-privacy",
+      "method": "web-form-mail",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Credit bureau plus marketing data. Prescreen opt-out also via optoutprescreen.com.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "infutor",
+      "name": "Infutor",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.infutor.com/privacy-policy/",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Consumer-identity data aggregator (now Verisk Marketing Solutions). CCPA opt-out via privacy page.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "safegraph",
+      "name": "SafeGraph",
+      "category": "location-data",
+      "opt_out_url": "https://www.safegraph.com/privacy-policy",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Location-data broker selling foot-traffic/movement data. CCPA opt-out via the privacy page.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "mobilewalla",
+      "name": "Mobilewalla",
+      "category": "location-data",
+      "opt_out_url": "https://www.mobilewalla.com/",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Mobile location/audience data broker. Opt-out via the site's privacy/CCPA section (specific path moves; check the footer).",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "gravy-analytics",
+      "name": "Gravy Analytics (Unacast)",
+      "category": "location-data",
+      "opt_out_url": "https://www.unacast.com/privacy-policy",
+      "method": "email-or-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Location-data broker (parent of Venntel); merged into Unacast in 2023. Consumer opt-out via the privacy page.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "clearview-ai",
+      "name": "Clearview AI",
+      "category": "facial-recognition",
+      "opt_out_url": "https://www.clearview.ai/privacy-and-requests",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "Facial-recognition broker scraping public photos. CCPA/CPRA access & opt-out requests.",
+      "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
     }
   ]
 }
