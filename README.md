@@ -8,6 +8,8 @@
 |___/\__,_/_/ /_/_/____/_/ /_/
 ```
 
+[![CI](https://github.com/iceberg-deep/vanish/actions/workflows/ci.yml/badge.svg)](https://github.com/iceberg-deep/vanish/actions/workflows/ci.yml)
+
 **A single-operator CLI to audit and scrub your *own* digital footprint — locally, on your terms.**
 
 vanish helps you:
