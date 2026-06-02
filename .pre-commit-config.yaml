@@ -1,0 +1,18 @@
+# Local secret + hygiene checks. Install once with:  pre-commit install
+# Then gitleaks (and the basics) run automatically on every commit. This is the
+# local complement to GitHub's server-side push protection.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        name: gitleaks (block committed secrets)
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-yaml
