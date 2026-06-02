@@ -174,6 +174,52 @@ vanish accounts
 
 Official links and steps for Instagram, Facebook, X, TikTok, LinkedIn, Reddit, Snapchat, your Google account, and Google's "Results about you" tool.
 
+## How it works
+
+vanish is a small, dependency-light Python CLI (`requests` is the only runtime dependency). It runs entirely on your machine and is built around one rule — **it removes, it never discovers** — so every part either acts on data you supply about yourself or points you at an official removal flow. Nothing crawls, resolves, or aggregates information about people.
+
+### The flow
+
+The headline workflow (`cleanse`) is a three-phase loop you drive, with the machine doing everything it legitimately can:
+
+```
+ ┌─ ① FIND ──────────┐   ┌─ ② CLEANSE ─────────────┐   ┌─ ③ VALIDATE ────────┐
+ │ open each broker, │   │ render the opt-out      │   │ re-open the broker, │
+ │ locate your       │ → │ letter, auto-open page, │ → │ confirm you're gone,│
+ │ listing           │   │ clipboard / mailto      │   │ mark confirmed /    │
+ │                   │   │ draft, show the steps   │   │ relisted            │
+ └───────────────────┘   └─────────────────────────┘   └─────────────────────┘
+```
+
+What it automates: opening the right page, copying the finished letter to your clipboard, drafting a pre-filled email. What it **won't** automate: submitting forms, solving CAPTCHAs, clicking email-confirmation links, phone verification — those are deliberate broker defenses against bots, so they stay with you. On a headless box (no browser/clipboard) it degrades cleanly to printing the URLs and letter.
+
+### The pieces
+
+| Module | Responsibility |
+|---|---|
+| `brokers.py` + `data/brokers.json` | Static registry: each broker's opt-out URL, method, what it needs, and (for email brokers) a contact address. Pure reference data. |
+| `audit.py` | Two probes: a HaveIBeenPwned breach lookup (your email) and a public-profile check (your username). The profile check classifies each platform as `found` / `absent` / `manual` based on how that site actually behaves (see below). |
+| `requests_gen.py` | Renders CCPA / GDPR / generic removal letters from identifiers passed at call time. Adds authorized-agent language on request. Returns text; persists nothing. |
+| `automation.py` | Best-effort local actions: open a URL, copy to clipboard (`wl-copy`/`xclip`/`pbcopy`/`clip.exe`), build a `mailto:`. Every action degrades gracefully if unavailable. |
+| `cli.py` | Argument parsing and the command flows (`brokers`, `audit`, `request`, `cleanse`, `track`, `status`, `guide`, `accounts`). |
+| `db.py` | A local SQLite tracker that records only the *fact* of a filing — broker, template, status, dates. It has no columns for names, emails, or any identifier. |
+| `guide.py` | Generates the plain-English `guide` report from the live broker/account data. |
+| `accounts.py` | Static deletion/deactivation links and steps for major platforms. |
+
+### Why the username probe is honest
+
+Naively, "HTTP 200 = profile exists" — but Instagram, X, Reddit, Twitch and others return a `200` JavaScript shell even for handles that don't exist, so a 200 is meaningless there. Each platform is therefore classified by how it *actually* signals absence:
+
+- **status** (e.g. GitHub, YouTube) — a clean `404` for missing profiles, so the HTTP code is trustworthy.
+- **content** (e.g. TikTok, Pinterest, Facebook) — always `200`, but a known marker in the body reveals absence.
+- **manual** (e.g. Instagram, X, Reddit) — a `200` shell with no reliable signal, so vanish refuses to guess and flags it `CHECK` with the URL for you to eyeball.
+
+The result is no false "found" hits — which, for a footprint tool, is the difference between useful and misleading.
+
+### What crosses the network
+
+Only two things ever leave your machine, and only when you ask: (a) your email address to **HaveIBeenPwned** during a breach check (requires a key; the tool discloses this before sending), and (b) plain `GET`s to public profile URLs during a username probe. Letter generation, the tracker, the guide, and everything else are entirely offline.
+
 ## Data & privacy
 
 - Local store: `~/.vanish/vanish.db` (SQLite, `0600`, in a `0700` dir) — just `requests` and `audit_log` tables.
