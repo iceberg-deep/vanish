@@ -60,6 +60,7 @@ STATUS_COLOR = {
     "relisted": C.BRIGHT_MAGENTA,
     "failed": C.BRIGHT_RED,
     "found": C.BRIGHT_GREEN,
+    "verified": C.BRIGHT_GREEN,
     "absent": C.GREY,
     "pwned": C.BRIGHT_RED,
     "clean": C.BRIGHT_GREEN,

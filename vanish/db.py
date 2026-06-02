@@ -92,6 +92,19 @@ def init_db():
             )
             """
         )
+        # Local overlay of `vanish verify` results — your own live link-checks of
+        # the broker registry. Keyed by broker id; holds no PII (just link state).
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS verifications (
+                broker_id   TEXT PRIMARY KEY,
+                status      TEXT NOT NULL,
+                http_code   INTEGER,
+                final_url   TEXT,
+                checked_at  TEXT NOT NULL
+            )
+            """
+        )
         conn.commit()
     finally:
         conn.close()
@@ -149,6 +162,40 @@ def list_requests():
     finally:
         conn.close()
     return [dict(r) for r in rows]
+
+
+def record_verification(broker_id, status, http_code, final_url):
+    """Upsert a local link-check result for a broker. Returns the checked date."""
+    init_db()
+    conn = _connect()
+    now = _now()
+    try:
+        conn.execute(
+            """
+            INSERT INTO verifications
+                (broker_id, status, http_code, final_url, checked_at)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(broker_id) DO UPDATE SET
+                status=excluded.status, http_code=excluded.http_code,
+                final_url=excluded.final_url, checked_at=excluded.checked_at
+            """,
+            (broker_id, status, http_code, final_url, now),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return now
+
+
+def get_verifications():
+    """Return {broker_id: {status, http_code, final_url, checked_at}}."""
+    init_db()
+    conn = _connect()
+    try:
+        rows = conn.execute("SELECT * FROM verifications").fetchall()
+    finally:
+        conn.close()
+    return {r["broker_id"]: dict(r) for r in rows}
 
 
 def status_counts():

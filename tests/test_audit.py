@@ -126,3 +126,51 @@ def test_has_hibp_key_reflects_environment(monkeypatch):
     assert audit.has_hibp_key() is False
     monkeypatch.setenv("HIBP_API_KEY", "x")
     assert audit.has_hibp_key() is True
+
+
+# --- check_url: live link verification, blocked != dead -------------------- #
+
+class _UrlResp:
+    def __init__(self, status_code, url):
+        self.status_code = status_code
+        self.url = url
+
+
+def _patch_get(monkeypatch, status_code, final_url):
+    monkeypatch.setattr(
+        "requests.get", lambda url, **k: _UrlResp(status_code, final_url))
+
+
+def test_check_url_ok(monkeypatch):
+    _patch_get(monkeypatch, 200, "https://x/opt-out")
+    r = audit.check_url("https://x/opt-out")
+    assert r["status"] == "ok" and r["code"] == 200 and r["redirected"] is False
+
+
+def test_check_url_blocked_is_not_dead(monkeypatch):
+    # 403/401/429 are anti-bot walls — the page likely exists, so NOT dead.
+    for code in (401, 403, 429):
+        _patch_get(monkeypatch, code, "https://x/opt-out")
+        assert audit.check_url("https://x/opt-out")["status"] == "blocked"
+
+
+def test_check_url_dead(monkeypatch):
+    for code in (404, 410, 500):
+        _patch_get(monkeypatch, code, "https://x/gone")
+        assert audit.check_url("https://x/gone")["status"] == "dead"
+
+
+def test_check_url_redirect_is_informational(monkeypatch):
+    _patch_get(monkeypatch, 200, "https://x/final")
+    r = audit.check_url("https://x/start")
+    assert r["status"] == "ok" and r["redirected"] is True
+
+
+def test_check_url_network_error(monkeypatch):
+    import requests
+
+    def _boom(url, **k):
+        raise requests.RequestException("no route")
+    monkeypatch.setattr("requests.get", _boom)
+    r = audit.check_url("https://x")
+    assert r["status"] == "error" and r["code"] is None

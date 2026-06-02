@@ -6,8 +6,14 @@
       "category": "people-search",
       "opt_out_url": "https://www.spokeo.com/optout",
       "method": "web-form",
-      "needs": ["profile_url", "email"],
-      "notes": "Search your name, copy the listing URL, then submit it on the opt-out page. Confirmation email arrives within minutes."
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "Search your name, copy the listing URL, then submit it on the opt-out page. Confirmation email arrives within minutes.",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "whitepages",
@@ -15,8 +21,14 @@
       "category": "people-search",
       "opt_out_url": "https://www.whitepages.com/suppression-requests",
       "method": "web-form-phone",
-      "needs": ["profile_url", "phone"],
-      "notes": "Requires a phone call with an automated verification code to complete the suppression."
+      "needs": [
+        "profile_url",
+        "phone"
+      ],
+      "notes": "Requires a phone call with an automated verification code to complete the suppression.",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "beenverified",
@@ -24,8 +36,14 @@
       "category": "people-search",
       "opt_out_url": "https://www.beenverified.com/app/optout/search",
       "method": "web-form",
-      "needs": ["profile_url", "email"],
-      "notes": "Find your record, click it, then verify via the email link they send."
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "Find your record, click it, then verify via the email link they send.",
+      "source": "initial curated set (v0.1)",
+      "verified": false,
+      "last_verified": null
     },
     {
       "id": "radaris",
@@ -33,8 +51,15 @@
       "category": "people-search",
       "opt_out_url": "https://radaris.com/control/privacy",
       "method": "web-form-account",
-      "needs": ["profile_url", "email", "phone"],
-      "notes": "Requires creating/verifying control of the listing. Often relists; re-check quarterly."
+      "needs": [
+        "profile_url",
+        "email",
+        "phone"
+      ],
+      "notes": "Requires creating/verifying control of the listing. Often relists; re-check quarterly.",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "mylife",
@@ -43,8 +68,15 @@
       "opt_out_url": "https://www.mylife.com/ccpa/index.pubview",
       "opt_out_email": "privacy@mylife.com",
       "method": "email-or-phone",
-      "needs": ["profile_url", "email", "phone"],
-      "notes": "Email privacy@mylife.com or call support to demand removal under CCPA."
+      "needs": [
+        "profile_url",
+        "email",
+        "phone"
+      ],
+      "notes": "Email privacy@mylife.com or call support to demand removal under CCPA.",
+      "source": "initial curated set (v0.1)",
+      "verified": false,
+      "last_verified": null
     },
     {
       "id": "peoplefinders",
@@ -52,17 +84,28 @@
       "category": "people-search",
       "opt_out_url": "https://www.peoplefinders.com/opt-out",
       "method": "web-form",
-      "needs": ["profile_url"],
-      "notes": "Locate the listing and submit the URL. No account required."
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Locate the listing and submit the URL. No account required.",
+      "source": "initial curated set (v0.1)",
+      "verified": false,
+      "last_verified": null
     },
     {
       "id": "intelius",
       "name": "Intelius",
       "category": "people-search",
-      "opt_out_url": "https://www.intelius.com/opt-out/submit/",
+      "opt_out_url": "https://suppression.peopleconnect.us",
       "method": "web-form",
-      "needs": ["profile_url", "email"],
-      "notes": "Part of the PeopleConnect network (shares data with Instant Checkmate, TruthFinder)."
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "Part of the PeopleConnect network (Instant Checkmate, TruthFinder). Opt out via the unified PeopleConnect suppression portal. (Own /opt-out/submit/ URL 404'd; updated via vanish verify.)",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "truepeoplesearch",
@@ -70,8 +113,13 @@
       "category": "people-search",
       "opt_out_url": "https://www.truepeoplesearch.com/removal",
       "method": "web-form",
-      "needs": ["profile_url"],
-      "notes": "Fast removal. Paste the record URL and pass a captcha; no email needed."
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Fast removal. Paste the record URL and pass a captcha; no email needed.",
+      "source": "initial curated set (v0.1)",
+      "verified": false,
+      "last_verified": null
     },
     {
       "id": "fastpeoplesearch",
@@ -79,8 +127,13 @@
       "category": "people-search",
       "opt_out_url": "https://www.fastpeoplesearch.com/removal",
       "method": "web-form",
-      "needs": ["profile_url"],
-      "notes": "Sister site to TruePeopleSearch. Same record-URL removal flow."
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "Sister site to TruePeopleSearch. Same record-URL removal flow.",
+      "source": "initial curated set (v0.1)",
+      "verified": false,
+      "last_verified": null
     },
     {
       "id": "instantcheckmate",
@@ -88,8 +141,14 @@
       "category": "people-search",
       "opt_out_url": "https://www.instantcheckmate.com/opt-out/",
       "method": "web-form",
-      "needs": ["profile_url", "email"],
-      "notes": "PeopleConnect network. Email verification required."
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "PeopleConnect network. Email verification required.",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "truthfinder",
@@ -97,8 +156,14 @@
       "category": "people-search",
       "opt_out_url": "https://www.truthfinder.com/opt-out/",
       "method": "web-form",
-      "needs": ["profile_url", "email"],
-      "notes": "PeopleConnect network. Suppresses the public listing within 48 hours."
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "PeopleConnect network. Suppresses the public listing within 48 hours.",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "acxiom",
@@ -106,8 +171,15 @@
       "category": "data-aggregator",
       "opt_out_url": "https://isapps.acxiom.com/optout/optout.aspx",
       "method": "web-form",
-      "needs": ["name", "email", "address"],
-      "notes": "Large marketing data aggregator. Opt out of data sharing for marketing/cookies."
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Large marketing data aggregator. Opt out of data sharing for marketing/cookies.",
+      "source": "initial curated set (v0.1); CA CPPA registered data broker",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "lexisnexis",
@@ -115,8 +187,16 @@
       "category": "data-aggregator",
       "opt_out_url": "https://optout.lexisnexis.com/",
       "method": "web-form-mail",
-      "needs": ["name", "email", "address", "dob"],
-      "notes": "Permissible-purpose data. Opt-out is restricted; identity verification by mail may be required."
+      "needs": [
+        "name",
+        "email",
+        "address",
+        "dob"
+      ],
+      "notes": "Permissible-purpose data. Opt-out is restricted; identity verification by mail may be required.",
+      "source": "initial curated set (v0.1); CA CPPA registered data broker",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "oracle-bluekai",
@@ -124,18 +204,108 @@
       "category": "ad-tech",
       "opt_out_url": "https://www.oracle.com/legal/privacy/marketing-cloud-data-cloud-privacy-policy.html",
       "method": "browser-optout",
-      "needs": ["browser"],
-      "notes": "Ad-tech data cloud (being wound down). Opt out via the registry/cookie controls; clear ad cookies."
+      "needs": [
+        "browser"
+      ],
+      "notes": "Ad-tech data cloud (being wound down). Opt out via the registry/cookie controls; clear ad cookies.",
+      "source": "initial curated set (v0.1)",
+      "verified": true,
+      "last_verified": "2026-06-02"
     },
     {
       "id": "epsilon",
       "name": "Epsilon",
       "category": "ad-tech",
-      "opt_out_url": "https://www.epsilon.com/us/privacy-policy/consumer-information",
+      "opt_out_url": "https://legal.epsilon.com/global-privacy-policies",
       "opt_out_email": "privacy@epsilon.com",
       "method": "email-or-form",
-      "needs": ["name", "email", "address"],
-      "notes": "Marketing data cooperative. Email privacy@epsilon.com or use the consumer form to opt out."
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Marketing data cooperative. Email privacy@epsilon.com or use the consumer form linked from the privacy policy. (Old opt-out URL 404'd; updated via vanish verify.)",
+      "source": "initial curated set (v0.1); CA CPPA registered data broker",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "corelogic",
+      "name": "CoreLogic (Cotality)",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.cotality.com/legal/privacy-policy",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Property and consumer-data aggregator feeding tenant/credit screening. CoreLogic rebranded to Cotality in 2025; opt-out via the privacy page. (Old URL 404'd; updated via vanish verify.)",
+      "source": "California CPPA registered data broker (DELETE Act); opt-out URL from public lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "liveramp",
+      "name": "LiveRamp",
+      "category": "ad-tech",
+      "opt_out_url": "https://liveramp.com/opt_out/",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Identity-resolution graph (formerly Acxiom AbiliTec) feeding ad-tech matching.",
+      "source": "California CPPA registered data broker (DELETE Act); opt-out URL from public lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "equifax",
+      "name": "Equifax",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.equifax.com/personal/credit-report-services/",
+      "method": "web-form-mail",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Credit bureau and consumer-data aggregator. Marketing opt-out also via optoutprescreen.com.",
+      "source": "California CPPA registered data broker (DELETE Act); opt-out URL from public lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "experian",
+      "name": "Experian",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.experian.com/privacy/opting_out",
+      "method": "web-form-mail",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Credit bureau plus large marketing-data arm. Prescreen opt-out via optoutprescreen.com. (Old URL 404'd; updated via vanish verify.)",
+      "source": "California CPPA registered data broker (DELETE Act); opt-out URL from public lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
+    },
+    {
+      "id": "data-axle",
+      "name": "Data Axle",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.data-axle.com/privacy-policy/",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Consumer and business data compiler (formerly Infogroup/InfoUSA). Opt-out via the privacy policy / CCPA section. (Old URL 404'd; updated via vanish verify.)",
+      "source": "California CPPA registered data broker (DELETE Act); opt-out URL from public lists",
+      "verified": true,
+      "last_verified": "2026-06-02"
     }
   ]
 }
