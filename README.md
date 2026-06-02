@@ -60,7 +60,12 @@ Lists ~15 known brokers (Spokeo, Whitepages, BeenVerified, Radaris, MyLife, Peop
 Probe-only: it checks a breach database and public profile URLs, resolves nothing, and **never stores the email or handle** (only outcome counts are logged).
 
 ```bash
-# Breach check (needs a HIBP API key; degrades gracefully if unset)
+# Breach check — the key is read from the HIBP_API_KEY *environment variable*
+# only (never a flag, never a file the tool reads), and it degrades gracefully
+# if unset. Privacy note: this lookup transmits your full email address to
+# HaveIBeenPwned (the breach-by-email endpoint has no k-anonymity); the tool
+# says so before it sends. The key is used only as a request header and is
+# never logged or printed.
 export HIBP_API_KEY=...        # from https://haveibeenpwned.com/API/Key
 vanish audit --email me@example.com
 

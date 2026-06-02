@@ -10,6 +10,12 @@ build/
 dist/
 .pytest_cache/
 
+# Secrets — vanish reads HIBP_API_KEY from the environment only and never reads
+# a .env file, but ignore these defensively so a key can never be committed.
+.env
+.env.*
+*.env
+
 # Local vanish runtime data (never belongs in the repo)
 .vanish/
 vanish-removal-guide.md

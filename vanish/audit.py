@@ -90,15 +90,29 @@ def classify_exposure(data_classes):
     return critical, other
 
 
-def check_hibp(email, api_key=None, timeout=15):
+def has_hibp_key():
+    """True if a HIBP API key is present in the environment."""
+    return bool(os.environ.get("HIBP_API_KEY"))
+
+
+def check_hibp(email, timeout=15):
     """Query Have I Been Pwned for breaches of `email`.
+
+    The API key is read from the HIBP_API_KEY environment variable ONLY — there
+    is deliberately no parameter or CLI flag for it, so it can't end up in shell
+    history, argv, or a committed file. The key is used solely as a request
+    header and is never logged, printed, or returned.
+
+    Privacy note: this endpoint sends the FULL email address to HaveIBeenPwned
+    (there is no k-anonymity for the email lookup, unlike the password API).
+    Callers should disclose that to the user.
 
     Returns a dict:
       {"ok": True, "breaches": [...]}            on success
       {"ok": True, "breaches": []}               when not found (clean)
       {"ok": False, "reason": "no-api-key"|...}  on graceful degradation
     """
-    api_key = api_key or os.environ.get("HIBP_API_KEY")
+    api_key = os.environ.get("HIBP_API_KEY")
     if not api_key:
         return {"ok": False, "reason": "no-api-key"}
 

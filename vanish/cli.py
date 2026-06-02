@@ -67,16 +67,23 @@ def cmd_audit(args):
 def _audit_email(email):
     print(ui.header("Breach audit — Have I Been Pwned"))
     print("  " + ui.field("email", email))
+    # Disclose the data transmission BEFORE it happens — only when a key is
+    # present, i.e. only when a lookup (and thus a transmission) will occur.
+    if audit.has_hibp_key():
+        print("  " + paint(
+            "Note: this sends your email address to HaveIBeenPwned "
+            "(haveibeenpwned.com) to check it against known breaches.", C.GREY))
     result = audit.check_hibp(email)
 
     if not result["ok"]:
         reason = result.get("reason")
         if reason == "no-api-key":
             print("  " + ui.warn(
-                "HIBP_API_KEY not set — skipping breach lookup."))
+                "HIBP_API_KEY not set — skipping breach lookup. "
+                "(No data is transmitted without it.)"))
             print("  " + paint(
-                "Set it with: export HIBP_API_KEY=...  (key from "
-                "https://haveibeenpwned.com/API/Key)", C.GREY))
+                "Set it in your environment: export HIBP_API_KEY=...  "
+                "(key from https://haveibeenpwned.com/API/Key)", C.GREY))
         elif reason == "auth":
             print("  " + ui.err("HIBP rejected the API key (%s)." % result.get("detail", "")))
         elif reason == "rate-limited":
@@ -574,8 +581,16 @@ def build_parser():
         "--category", choices=brokers.categories(), help="filter by category")
     p_brokers.set_defaults(func=cmd_brokers)
 
-    p_audit = sub.add_parser("audit", help="audit your own email / usernames")
-    p_audit.add_argument("--email", help="email to check against Have I Been Pwned")
+    p_audit = sub.add_parser(
+        "audit", help="audit your own email / usernames",
+        epilog="Breach check reads the API key from the HIBP_API_KEY "
+               "environment variable only (never a flag or committed file). "
+               "Note: it transmits your email address to HaveIBeenPwned "
+               "(haveibeenpwned.com); the username probe stays local.")
+    p_audit.add_argument(
+        "--email",
+        help="email to check against Have I Been Pwned (transmits the email to "
+             "haveibeenpwned.com; needs HIBP_API_KEY in the environment)")
     p_audit.add_argument("--username", help="handle to probe across public profiles")
     p_audit.add_argument(
         "--platforms", nargs="+", choices=list(audit.ALL_PLATFORMS),
