@@ -154,6 +154,21 @@ Official links and steps for Instagram, Facebook, X, TikTok, LinkedIn, Reddit, S
 - Set `NO_COLOR=1` to disable colored output.
 - No telemetry. No uploads. No people-search. No lookups. No record of any person.
 
+## Development & tests
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+The suite (`tests/`) covers the breach-severity classifier, the honest username
+probe, letter generation + authorized-agent language, the broker registry, the
+guide report, the automation helpers, and full CLI flows. Two invariants are
+asserted directly: the `requests` table has **no identifier columns**, and
+identifiers **never reach the database file** even after a tracked request +
+cleanse run. Every test is isolated — the store is redirected to a tmp dir and
+network access is blocked — so it never touches `~/.vanish` or the internet.
+
 ## License
 
 MIT.

@@ -13,6 +13,9 @@ authors = [{ name = "vanish" }]
 keywords = ["privacy", "opt-out", "data-broker", "ccpa", "gdpr", "footprint"]
 dependencies = ["requests>=2.25"]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
 [project.scripts]
 vanish = "vanish.cli:main"
 
@@ -21,3 +24,7 @@ packages = ["vanish"]
 
 [tool.setuptools.package-data]
 vanish = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
