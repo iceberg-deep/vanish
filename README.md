@@ -60,14 +60,14 @@ Lists ~15 known brokers (Spokeo, Whitepages, BeenVerified, Radaris, MyLife, Peop
 Probe-only: it checks a breach database and public profile URLs, resolves nothing, and **never stores the email or handle** (only outcome counts are logged).
 
 ```bash
-# Breach check — the key is read from the HIBP_API_KEY *environment variable*
-# only (never a flag, never a file the tool reads), and it degrades gracefully
-# if unset. Privacy note: this lookup transmits your full email address to
-# HaveIBeenPwned (the breach-by-email endpoint has no k-anonymity); the tool
-# says so before it sends. The key is used only as a request header and is
-# never logged or printed.
-export HIBP_API_KEY=...        # from https://haveibeenpwned.com/API/Key
+# Breach check — see "Getting a HIBP API key" below. The key is read from the
+# HIBP_API_KEY *environment variable* only (never a flag, never a file the tool
+# reads), degrades gracefully if unset, transmits your full email to
+# HaveIBeenPwned (no k-anonymity for the email lookup — the tool says so before
+# it sends), and is never logged or printed.
+export HIBP_API_KEY=your-key  # this session only — not in .bashrc
 vanish audit --email me@example.com
+unset HIBP_API_KEY            # clear it when done
 
 # Public-profile probe (per-platform: found / absent / CHECK-manually)
 vanish audit --username myhandle
@@ -75,6 +75,29 @@ vanish audit --username myhandle --platforms github reddit x
 ```
 
 Breach results flag **high-risk exposures** — leaked passwords, Social Security numbers, and financial data are pulled onto their own `SENSITIVE` line per breach and summarized with next steps (rotate passwords + 2FA, credit freeze, alert your bank), so they don't get lost among benign data classes.
+
+#### Getting a HIBP API key
+
+The breach-by-email lookup uses the official [Have I Been Pwned API](https://haveibeenpwned.com/API/Key), which requires a low-cost API key (HIBP charges a small fee to fund the service; there is no free tier for the email endpoint). To get and use one:
+
+1. Go to **https://haveibeenpwned.com/API/Key**, verify your email, and subscribe.
+2. Use the key for a **single session only** — keep it out of `~/.bashrc` and other startup files so it isn't persisted:
+
+   ```bash
+   export HIBP_API_KEY=your-key      # this terminal only
+   vanish audit --email you@example.com
+   unset HIBP_API_KEY                # clear it when done
+   ```
+
+3. **Most private** (the key is never shown on screen or saved in shell history):
+
+   ```bash
+   read -rs HIBP_API_KEY && export HIBP_API_KEY   # type the key at the silent prompt
+   vanish audit --email you@example.com
+   unset HIBP_API_KEY
+   ```
+
+The username probe and everything else in vanish need **no key** and make no such transmission — only the email breach check does.
 
 Platforms probed: github, instagram, x, tiktok, reddit, pinterest, twitch, medium, youtube, facebook. (Instagram/X/Reddit/Twitch/Medium serve a 200 shell for missing handles, so those are honestly flagged `CHECK` rather than guessed.)
 

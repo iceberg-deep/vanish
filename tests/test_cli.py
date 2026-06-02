@@ -107,6 +107,26 @@ def test_audit_requires_something_to_check(capsys):
     assert rc == 2
 
 
+def test_audit_no_key_shows_safe_setup_guidance(capsys, monkeypatch):
+    # Without a key: explain how to get one and how to use it for one session
+    # only (export -> use -> unset), and disclose nothing is transmitted.
+    monkeypatch.delenv("HIBP_API_KEY", raising=False)
+    rc, out = run(["audit", "--email", "me@example.com"], capsys)
+    assert rc == 0
+    assert "No data is transmitted" in out
+    assert "haveibeenpwned.com/API/Key" in out
+    assert "export HIBP_API_KEY" in out
+    assert "unset HIBP_API_KEY" in out
+
+
+def test_audit_no_key_does_not_transmit(capsys, monkeypatch):
+    # Belt-and-suspenders: with no key, the audit must not hit the network
+    # (the conftest no_network fixture already raises on requests.get).
+    monkeypatch.delenv("HIBP_API_KEY", raising=False)
+    rc, _ = run(["audit", "--email", "me@example.com"], capsys)
+    assert rc == 0
+
+
 # --- cleanse walkthrough ------------------------------------------------- #
 
 def test_cleanse_runs_all_three_phases(capsys):

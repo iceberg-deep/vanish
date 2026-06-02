@@ -64,6 +64,24 @@ def cmd_audit(args):
     return rc
 
 
+def _print_hibp_key_help():
+    """Tell the user how to get a HIBP key and use it for one session only."""
+    g = lambda s: paint(s, C.GREY)
+    print("  " + g("To enable the breach check:"))
+    print("    " + g("1. Get an API key (HIBP charges a small fee): ")
+          + paint("https://haveibeenpwned.com/API/Key", C.BRIGHT_BLUE))
+    print("    " + g("2. Use it for ONE session — keep it out of your shell "
+                     "startup files (.bashrc):"))
+    print("         " + paint("export HIBP_API_KEY=your-key", C.BRIGHT_WHITE)
+          + g("   # this terminal only"))
+    print("         " + paint("vanish audit --email you@example.com", C.BRIGHT_WHITE))
+    print("         " + paint("unset HIBP_API_KEY", C.BRIGHT_WHITE)
+          + g("            # clear it when done"))
+    print("    " + g("Most private (key never shown or saved in history):"))
+    print("         " + paint("read -rs HIBP_API_KEY && export HIBP_API_KEY",
+                              C.BRIGHT_WHITE))
+
+
 def _audit_email(email):
     print(ui.header("Breach audit — Have I Been Pwned"))
     print("  " + ui.field("email", email))
@@ -81,9 +99,7 @@ def _audit_email(email):
             print("  " + ui.warn(
                 "HIBP_API_KEY not set — skipping breach lookup. "
                 "(No data is transmitted without it.)"))
-            print("  " + paint(
-                "Set it in your environment: export HIBP_API_KEY=...  "
-                "(key from https://haveibeenpwned.com/API/Key)", C.GREY))
+            _print_hibp_key_help()
         elif reason == "auth":
             print("  " + ui.err("HIBP rejected the API key (%s)." % result.get("detail", "")))
         elif reason == "rate-limited":
