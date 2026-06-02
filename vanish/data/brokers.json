@@ -1,0 +1,141 @@
+{
+  "brokers": [
+    {
+      "id": "spokeo",
+      "name": "Spokeo",
+      "category": "people-search",
+      "opt_out_url": "https://www.spokeo.com/optout",
+      "method": "web-form",
+      "needs": ["profile_url", "email"],
+      "notes": "Search your name, copy the listing URL, then submit it on the opt-out page. Confirmation email arrives within minutes."
+    },
+    {
+      "id": "whitepages",
+      "name": "Whitepages",
+      "category": "people-search",
+      "opt_out_url": "https://www.whitepages.com/suppression-requests",
+      "method": "web-form-phone",
+      "needs": ["profile_url", "phone"],
+      "notes": "Requires a phone call with an automated verification code to complete the suppression."
+    },
+    {
+      "id": "beenverified",
+      "name": "BeenVerified",
+      "category": "people-search",
+      "opt_out_url": "https://www.beenverified.com/app/optout/search",
+      "method": "web-form",
+      "needs": ["profile_url", "email"],
+      "notes": "Find your record, click it, then verify via the email link they send."
+    },
+    {
+      "id": "radaris",
+      "name": "Radaris",
+      "category": "people-search",
+      "opt_out_url": "https://radaris.com/control/privacy",
+      "method": "web-form-account",
+      "needs": ["profile_url", "email", "phone"],
+      "notes": "Requires creating/verifying control of the listing. Often relists; re-check quarterly."
+    },
+    {
+      "id": "mylife",
+      "name": "MyLife",
+      "category": "people-search",
+      "opt_out_url": "https://www.mylife.com/ccpa/index.pubview",
+      "opt_out_email": "privacy@mylife.com",
+      "method": "email-or-phone",
+      "needs": ["profile_url", "email", "phone"],
+      "notes": "Email privacy@mylife.com or call support to demand removal under CCPA."
+    },
+    {
+      "id": "peoplefinders",
+      "name": "PeopleFinders",
+      "category": "people-search",
+      "opt_out_url": "https://www.peoplefinders.com/opt-out",
+      "method": "web-form",
+      "needs": ["profile_url"],
+      "notes": "Locate the listing and submit the URL. No account required."
+    },
+    {
+      "id": "intelius",
+      "name": "Intelius",
+      "category": "people-search",
+      "opt_out_url": "https://www.intelius.com/opt-out/submit/",
+      "method": "web-form",
+      "needs": ["profile_url", "email"],
+      "notes": "Part of the PeopleConnect network (shares data with Instant Checkmate, TruthFinder)."
+    },
+    {
+      "id": "truepeoplesearch",
+      "name": "TruePeopleSearch",
+      "category": "people-search",
+      "opt_out_url": "https://www.truepeoplesearch.com/removal",
+      "method": "web-form",
+      "needs": ["profile_url"],
+      "notes": "Fast removal. Paste the record URL and pass a captcha; no email needed."
+    },
+    {
+      "id": "fastpeoplesearch",
+      "name": "FastPeopleSearch",
+      "category": "people-search",
+      "opt_out_url": "https://www.fastpeoplesearch.com/removal",
+      "method": "web-form",
+      "needs": ["profile_url"],
+      "notes": "Sister site to TruePeopleSearch. Same record-URL removal flow."
+    },
+    {
+      "id": "instantcheckmate",
+      "name": "Instant Checkmate",
+      "category": "people-search",
+      "opt_out_url": "https://www.instantcheckmate.com/opt-out/",
+      "method": "web-form",
+      "needs": ["profile_url", "email"],
+      "notes": "PeopleConnect network. Email verification required."
+    },
+    {
+      "id": "truthfinder",
+      "name": "TruthFinder",
+      "category": "people-search",
+      "opt_out_url": "https://www.truthfinder.com/opt-out/",
+      "method": "web-form",
+      "needs": ["profile_url", "email"],
+      "notes": "PeopleConnect network. Suppresses the public listing within 48 hours."
+    },
+    {
+      "id": "acxiom",
+      "name": "Acxiom",
+      "category": "data-aggregator",
+      "opt_out_url": "https://isapps.acxiom.com/optout/optout.aspx",
+      "method": "web-form",
+      "needs": ["name", "email", "address"],
+      "notes": "Large marketing data aggregator. Opt out of data sharing for marketing/cookies."
+    },
+    {
+      "id": "lexisnexis",
+      "name": "LexisNexis",
+      "category": "data-aggregator",
+      "opt_out_url": "https://optout.lexisnexis.com/",
+      "method": "web-form-mail",
+      "needs": ["name", "email", "address", "dob"],
+      "notes": "Permissible-purpose data. Opt-out is restricted; identity verification by mail may be required."
+    },
+    {
+      "id": "oracle-bluekai",
+      "name": "Oracle BlueKai",
+      "category": "ad-tech",
+      "opt_out_url": "https://www.oracle.com/legal/privacy/marketing-cloud-data-cloud-privacy-policy.html",
+      "method": "browser-optout",
+      "needs": ["browser"],
+      "notes": "Ad-tech data cloud (being wound down). Opt out via the registry/cookie controls; clear ad cookies."
+    },
+    {
+      "id": "epsilon",
+      "name": "Epsilon",
+      "category": "ad-tech",
+      "opt_out_url": "https://www.epsilon.com/us/privacy-policy/consumer-information",
+      "opt_out_email": "privacy@epsilon.com",
+      "method": "email-or-form",
+      "needs": ["name", "email", "address"],
+      "notes": "Marketing data cooperative. Email privacy@epsilon.com or use the consumer form to opt out."
+    }
+  ]
+}

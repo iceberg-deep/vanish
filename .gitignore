@@ -1,0 +1,18 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python build/packaging artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Local vanish runtime data (never belongs in the repo)
+.vanish/
+vanish-removal-guide.md
+
+# OS / editor cruft
+.DS_Store
+*.swp

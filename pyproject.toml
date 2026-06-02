@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vanish"
+version = "0.1.0"
+description = "A self-service CLI to audit and scrub your own digital footprint."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "vanish" }]
+keywords = ["privacy", "opt-out", "data-broker", "ccpa", "gdpr", "footprint"]
+dependencies = ["requests>=2.25"]
+
+[project.scripts]
+vanish = "vanish.cli:main"
+
+[tool.setuptools]
+packages = ["vanish"]
+
+[tool.setuptools.package-data]
+vanish = ["data/*.json"]
