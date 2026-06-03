@@ -508,6 +508,212 @@
       "source": "California data-broker registry (CPPA DELETE Act) / public opt-out lists",
       "verified": true,
       "last_verified": "2026-06-02"
+    },
+    {
+      "id": "ussearch",
+      "name": "US Search",
+      "category": "people-search",
+      "opt_out_url": "https://www.ussearch.com/opt-out/",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "People-search; submit your listing for suppression.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "peoplelooker",
+      "name": "PeopleLooker",
+      "category": "people-search",
+      "opt_out_url": "https://www.peoplelooker.com/optout",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "BeenVerified-family people-search. Email verification.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "neighborwho",
+      "name": "NeighborWho",
+      "category": "people-search",
+      "opt_out_url": "https://www.neighborwho.com/optout",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "Property/people lookup (BeenVerified family).",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "ownerly",
+      "name": "Ownerly",
+      "category": "people-search",
+      "opt_out_url": "https://www.ownerly.com/optout",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "Property/owner lookup (BeenVerified family).",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "cocofinder",
+      "name": "CocoFinder",
+      "category": "people-search",
+      "opt_out_url": "https://cocofinder.com/",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "People-search; opt-out via the site footer / privacy section. (Specific /optout path 404'd.)",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "melissa",
+      "name": "Melissa",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.melissa.com/privacy-policy",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Contact-data quality/compiler (Melissa Data). CCPA/privacy request form.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "atdata",
+      "name": "AtData",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.atdata.com/optout",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Email-intelligence data broker (formerly TowerData).",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "v12data",
+      "name": "V12 (Porch Group Media)",
+      "category": "data-aggregator",
+      "opt_out_url": "https://porchgroupmedia.com/privacy-policy",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Consumer marketing-data compiler; V12 now Porch Group Media. Opt-out via privacy page.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "analyticsiq",
+      "name": "AnalyticsIQ",
+      "category": "data-aggregator",
+      "opt_out_url": "https://analytics-iq.com/opt-out/",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Predictive consumer-data broker.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "lotame",
+      "name": "Lotame",
+      "category": "ad-tech",
+      "opt_out_url": "https://www.lotame.com/about-lotame/privacy/",
+      "method": "browser-optout",
+      "needs": [
+        "browser"
+      ],
+      "notes": "Data-management platform / audience data. Opt out via privacy controls.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "nielsen",
+      "name": "Nielsen",
+      "category": "ad-tech",
+      "opt_out_url": "https://www.nielsen.com/legal/privacy-statement/",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Audience-measurement data. Opt-out via privacy statement.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "comscore",
+      "name": "Comscore",
+      "category": "ad-tech",
+      "opt_out_url": "https://www.comscore.com/About/Privacy",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Audience-measurement / digital data broker.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "foursquare",
+      "name": "Foursquare",
+      "category": "location-data",
+      "opt_out_url": "https://foursquare.com/privacy/",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Location-intelligence data broker (Placed/Factual).",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "precisely",
+      "name": "Precisely (PlaceIQ)",
+      "category": "location-data",
+      "opt_out_url": "https://www.precisely.com/",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Location/address data broker; acquired PlaceIQ. Opt-out via the privacy/legal section.",
+      "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
     }
   ]
 }
