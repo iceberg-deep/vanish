@@ -714,6 +714,214 @@
       "source": "Vermont data broker registry (9 V.S.A. §2446) / public opt-out lists",
       "verified": true,
       "last_verified": "2026-06-03"
+    },
+    {
+      "id": "spyfly",
+      "name": "SpyFly",
+      "category": "people-search",
+      "opt_out_url": "https://www.spyfly.com/opt-out",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "People-search; submit your record for suppression.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "golookup",
+      "name": "GoLookUp",
+      "category": "people-search",
+      "opt_out_url": "https://golookup.com/optout",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "People-search; email-verified opt-out.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "zabasearch",
+      "name": "ZabaSearch",
+      "category": "people-search",
+      "opt_out_url": "https://suppression.peopleconnect.us",
+      "method": "web-form",
+      "needs": [
+        "profile_url",
+        "email"
+      ],
+      "notes": "PeopleConnect-network people-search; opt out via the unified suppression portal.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "cyberbackgroundchecks",
+      "name": "CyberBackgroundChecks",
+      "category": "people-search",
+      "opt_out_url": "https://www.cyberbackgroundchecks.com/removal",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "People-search; submit your record URL.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "smartbackgroundchecks",
+      "name": "SmartBackgroundChecks",
+      "category": "people-search",
+      "opt_out_url": "https://www.smartbackgroundchecks.com/optout",
+      "method": "web-form",
+      "needs": [
+        "profile_url"
+      ],
+      "notes": "People-search; submit your record URL.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "merkle",
+      "name": "Merkle",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.merkle.com/privacy-policy/",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email",
+        "address"
+      ],
+      "notes": "Customer-data / identity aggregator (dentsu). CCPA opt-out via privacy page.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "dnb",
+      "name": "Dun & Bradstreet",
+      "category": "data-aggregator",
+      "opt_out_url": "https://www.dnb.com/utility-pages/privacy-policy.html",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "Business + consumer data aggregator. Opt-out via privacy page.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "kochava",
+      "name": "Kochava",
+      "category": "location-data",
+      "opt_out_url": "https://www.kochava.com/privacy/",
+      "method": "web-form",
+      "needs": [
+        "email"
+      ],
+      "notes": "Mobile attribution + location data broker. 'Do not sell' opt-out.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "zoominfo",
+      "name": "ZoomInfo",
+      "category": "contact-data",
+      "opt_out_url": "https://www.zoominfo.com/about-zoominfo/privacy-center",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "B2B contact-data broker selling professional emails/phones. Privacy center opt-out.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "rocketreach",
+      "name": "RocketReach",
+      "category": "contact-data",
+      "opt_out_url": "https://rocketreach.co/privacy",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "B2B contact-data broker. Opt-out form.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "peopledatalabs",
+      "name": "People Data Labs",
+      "category": "contact-data",
+      "opt_out_url": "https://www.peopledatalabs.com/do-not-sell-or-share",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "B2B/consumer profile-data API. CCPA do-not-sell/share opt-out.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "lusha",
+      "name": "Lusha",
+      "category": "contact-data",
+      "opt_out_url": "https://www.lusha.com/opt-out/",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "B2B contact-data broker. Opt-out form.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": false,
+      "last_verified": null
+    },
+    {
+      "id": "apollo",
+      "name": "Apollo.io",
+      "category": "contact-data",
+      "opt_out_url": "https://www.apollo.io/privacy-policy/",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "B2B sales-intelligence / contact-data broker. CCPA opt-out via privacy page.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
+    },
+    {
+      "id": "seamless-ai",
+      "name": "Seamless.AI",
+      "category": "contact-data",
+      "opt_out_url": "https://seamless.ai/privacy-policy",
+      "method": "web-form",
+      "needs": [
+        "name",
+        "email"
+      ],
+      "notes": "B2B contact-data broker. Opt-out via privacy page.",
+      "source": "Oregon data broker registry (DCBS) / public opt-out lists",
+      "verified": true,
+      "last_verified": "2026-06-03"
     }
   ]
 }
