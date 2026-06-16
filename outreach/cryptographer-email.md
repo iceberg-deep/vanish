@@ -1,14 +1,15 @@
 # Cryptographer — Reviewer Engagement Email (draft)
 
 Outreach draft to engage the external cryptographer for the Phase 0 review
-(see [../REVIEW-PACKET.md](../REVIEW-PACKET.md) §2). Bracketed `[...]` fields are
-placeholders to fill before sending. Attach or link the repo/packet under NDA as noted.
+(see [../REVIEW-PACKET.md](../REVIEW-PACKET.md) §2). The only remaining blank is
+`[name]` (the recipient) — fill it per send. Attach or link the repo/packet under NDA
+as noted.
 
 ---
 
 **Subject:** Paid crypto design review — zero-knowledge envelope, focused scope (Phase 0 gate)
 
-Hi [Reviewer name],
+Hi [name],
 
 I'm building **vanish**, a privacy-first, zero-knowledge footprint-monitoring app (native/Tauri; libsodium). It's the multi-user evolution of an existing single-user CLI. The core claim I need validated is the load-bearing one: **the operator cannot read any user's PII** — the server holds only ciphertext, a login verifier, and non-sensitive metadata, and per-user isolation is cryptographic rather than access-control.
 
@@ -28,12 +29,12 @@ I've written a **2-page reviewer brief (`REVIEW-PACKET.md`)** that orients you f
 **Deliverable:** a short written sign-off (or required-changes list) covering §3–4, §8, §13, the two design choices, the ZK-language ruling, and the Argon2id params.
 
 A few logistics:
-- Would this kind of focused design review be a fit for you, and what's your **rate / how you prefer to scope it**? My budget is roughly [range].
-- I'm hoping for a turnaround by **[target date]** — does that work?
+- Would this kind of focused design review be a fit for you, and what's your **rate / how you prefer to scope it**? Happy to discuss on a short call.
+- What turnaround could you offer? No hard deadline on my end yet.
 - Happy to send the packet under NDA if you'd like one.
 
 Thanks for considering it — I've tried to make the scope precise and respect your time. Glad to hop on a short call if that's easier.
 
 Best,
-[Your name]
-[contact]
+Justen Phillips
+justen.phillips88@gmail.com

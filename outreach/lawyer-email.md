@@ -2,7 +2,7 @@
 
 Outreach draft to engage counsel for the Phase 0 compliance review
 (see [../BLUEPRINT.md](../BLUEPRINT.md) §10 and [../REVIEW-PACKET.md](../REVIEW-PACKET.md) §4).
-Bracketed `[...]` fields are placeholders to fill before sending.
+The only remaining blank is `[name]` (the recipient) — fill it per send.
 
 **Dependency note:** question 3 (ToS accuracy) partly hinges on the cryptographer's
 ruling on whether MVP may use "zero-knowledge" language — have that ruling in hand, or
@@ -12,7 +12,7 @@ flag it to counsel, before finalizing privacy-policy wording.
 
 **Subject:** Privacy/data-broker law — pre-launch review for a zero-knowledge consumer app (focused scope)
 
-Hi [Lawyer name],
+Hi [name],
 
 I'm launching **vanish**, a privacy-first consumer app that helps an individual monitor and reduce their own digital footprint — breach exposure, data-broker presence, and removal-request tracking. It's built on a **zero-knowledge** architecture: user data is encrypted on the user's device and the server stores only ciphertext (no readable personal data, and we sell nothing). I'm looking for counsel with **US state privacy / data-broker / consumer-protection** experience to make a few specific determinations **before launch**.
 
@@ -28,12 +28,12 @@ I've prepared a short packet that frames these precisely: a **2-page brief (`REV
 **Deliverable:** a written memo answering the four questions, with any required ToS/privacy-policy language or conditions, suitable to rely on for launch.
 
 A few logistics:
-- Is this within your practice area, and **how would you scope / price it**? My budget is roughly [range].
-- I'm targeting a launch decision around **[target date]** — does that timeline work?
+- Is this within your practice area, and **how would you scope / price it**? Glad to talk it through.
+- What turnaround could you offer for the memo? No hard launch date locked on my end yet.
 - Happy to send the packet under engagement/NDA at whatever point you prefer.
 
 Thanks very much — I've tried to make the questions specific so they're efficient to answer. Glad to set up a short call.
 
 Best,
-[Your name]
-[contact]
+Justen Phillips
+justen.phillips88@gmail.com
