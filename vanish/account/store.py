@@ -83,6 +83,18 @@ def init_db():
                 created_at                 TEXT NOT NULL
             )
             """)
+        # Encrypted scan findings. The blob is the only semantic content; the
+        # columns carry no exposure data (mirrors the CLI's identifier-free schema).
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS findings (
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id           TEXT NOT NULL,
+                finding_id        TEXT NOT NULL,
+                finding_encrypted BLOB NOT NULL,
+                created_at        TEXT NOT NULL
+            )
+            """)
         conn.commit()
     finally:
         conn.close()
@@ -205,6 +217,34 @@ def list_identifiers(user_id):
     try:
         rows = conn.execute(
             "SELECT * FROM identifiers WHERE user_id = ? ORDER BY id",
+            (user_id,)).fetchall()
+    finally:
+        conn.close()
+    return [dict(r) for r in rows]
+
+
+# --- encrypted findings --------------------------------------------------- #
+def insert_finding(user_id, finding_id, finding_encrypted):
+    init_db()
+    conn = _connect()
+    try:
+        cur = conn.execute(
+            "INSERT INTO findings (user_id, finding_id, finding_encrypted, "
+            "created_at) VALUES (?, ?, ?, ?)",
+            (user_id, finding_id, finding_encrypted, now()))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        conn.close()
+
+
+def list_findings(user_id):
+    """Encrypted findings for a user (blob still ciphertext)."""
+    init_db()
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM findings WHERE user_id = ? ORDER BY id",
             (user_id,)).fetchall()
     finally:
         conn.close()
