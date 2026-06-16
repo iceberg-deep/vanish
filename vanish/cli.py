@@ -646,8 +646,17 @@ def cmd_guide(args):
     path = args.output or os.path.join(os.path.expanduser("~"),
                                        "vanish-removal-guide.md")
     try:
-        with open(path, "w", encoding="utf-8") as fh:
+        # The guide is personalized — it can carry your name and email. Lock it
+        # to the owner only (0600), the same discipline as the tracker db, so a
+        # shared machine can't leak it to other users. Open with restrictive
+        # perms from the start to avoid a brief world-readable window.
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
             fh.write(report)
+        try:
+            os.chmod(path, 0o600)  # tighten if the file pre-existed
+        except OSError:
+            pass  # best-effort on filesystems without POSIX modes
     except OSError as exc:
         print(ui.err("Couldn't write the guide: %s" % exc))
         return 1
