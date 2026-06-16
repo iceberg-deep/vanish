@@ -20,7 +20,7 @@ dev = ["pytest>=7.0"]
 vanish = "vanish.cli:main"
 
 [tool.setuptools]
-packages = ["vanish"]
+packages = ["vanish", "vanish.account"]
 
 [tool.setuptools.package-data]
 vanish = ["data/*.json"]
