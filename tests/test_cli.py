@@ -156,6 +156,31 @@ def test_guide_stdout_prints_report(capsys):
     assert "Removing Yourself From the Internet" in out
 
 
+def test_guide_file_is_owner_only(capsys, tmp_path):
+    """The personalized guide can carry name/email — it must be 0600 on disk,
+    the same discipline as the tracker db, so a shared box can't leak it."""
+    import os
+
+    path = tmp_path / "guide.md"
+    rc, _ = run(["guide", "--name", "Jane Doe", "--email", "jane@example.com",
+                 "--output", str(path)], capsys)
+    assert rc == 0
+    assert oct(os.stat(path).st_mode & 0o777) == "0o600"
+
+
+def test_guide_file_tightens_preexisting_perms(capsys, tmp_path):
+    """Even if the target file already exists world-readable, the write
+    locks it back down to 0600."""
+    import os
+
+    path = tmp_path / "guide.md"
+    path.write_text("stale")
+    os.chmod(path, 0o644)
+    rc, _ = run(["guide", "--output", str(path)], capsys)
+    assert rc == 0
+    assert oct(os.stat(path).st_mode & 0o777) == "0o600"
+
+
 # --- verify (link checker; network stubbed) ------------------------------ #
 
 def test_verify_records_status_and_reports(capsys, monkeypatch):
