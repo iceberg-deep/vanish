@@ -63,8 +63,13 @@ def _row(f):
     }
 
 
-def build(session):
-    """Return the dashboard payload (a plain dict) for the unlocked session."""
+def build(session, label="you@local"):
+    """Return the dashboard payload (a plain dict) for the unlocked session.
+
+    `label` is a free-text display nickname for the header ONLY. It is never derived
+    from — and never reads or writes — the verified email or any identifier; whatever
+    the operator types is shown verbatim.
+    """
     rows = [_row(f) for f in scan.load_findings(session)]
 
     # belt-and-suspenders: no identifier/dossier field may ride along in any row.
@@ -78,11 +83,11 @@ def build(session):
         if bad:
             raise ValueError("export would leak dossier fields: %s" % sorted(bad))
 
-    return {"operator": "you@local", "generated": True, "findings": rows}
+    return {"operator": label, "generated": True, "findings": rows}
 
 
-def write(session, path="vanish-findings.json"):
-    """Write the export JSON. Returns the path."""
+def write(session, path="vanish-findings.json", label="you@local"):
+    """Write the export JSON. Returns the path. `label` is a free-text nickname."""
     with open(path, "w", encoding="utf-8") as fh:
-        json.dump(build(session), fh, indent=2)
+        json.dump(build(session, label=label), fh, indent=2)
     return path
