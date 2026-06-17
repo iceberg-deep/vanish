@@ -173,7 +173,7 @@ def cmd_export_dashboard(args):
     out_dir = args.out or os.path.join(os.path.expanduser("~"), "vanish-dashboard")
     os.makedirs(out_dir, mode=0o700, exist_ok=True)
     json_path = os.path.join(out_dir, "vanish-findings.json")
-    export_dashboard.write(session, json_path)
+    export_dashboard.write(session, json_path, label=args.label)
     html_path = os.path.join(out_dir, "vanish-dashboard.html")
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "dashboard.html"),
                     html_path)
@@ -246,6 +246,9 @@ def build_parser():
     e = sub.add_parser("export-dashboard",
                        help="write the local dashboard + your findings export")
     e.add_argument("--out", help="output folder (default ~/vanish-dashboard)")
+    e.add_argument("--label", default="you@local",
+                   help="free-text display nickname for the header (never your "
+                        "verified email; shown verbatim). Default: you@local")
     return p
 
 

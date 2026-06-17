@@ -37,6 +37,20 @@ def test_export_has_no_identifier_fields(registered, tmp_path):
         assert needle not in raw, "export leaked %r" % needle
 
 
+def test_label_is_free_text_and_never_the_verified_email(registered, tmp_path):
+    _seed(registered)            # verifies owner@me.com
+    # default label is a placeholder, not the email
+    default = json.loads(open(
+        export_dashboard.write(registered.session, str(tmp_path / "a.json"))).read())
+    assert default["operator"] == "you@local"
+    assert "owner@me.com" not in open(str(tmp_path / "a.json")).read()
+    # a custom label is shown verbatim; the verified email still never appears
+    custom = json.loads(open(export_dashboard.write(
+        registered.session, str(tmp_path / "b.json"), label="My Nickname")).read())
+    assert custom["operator"] == "My Nickname"
+    assert "owner@me.com" not in open(str(tmp_path / "b.json")).read()
+
+
 def test_export_shape_is_dossier_free_and_action_bound(registered, tmp_path):
     _seed(registered)
     data = json.loads(open(
