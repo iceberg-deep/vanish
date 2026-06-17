@@ -23,6 +23,7 @@ import uuid
 from .. import accounts as cli_accounts
 from .. import audit as cli_audit
 from .. import brokers as cli_brokers
+from .. import db as cli_db
 from . import crypto, findings, identity, store
 
 _HIGH_RISK = {"passwords", "social security numbers", "credit cards",
@@ -187,3 +188,34 @@ def load_findings(session):
             remediation_action=data["remediation_action"],
             scan_run_id=data["scan_run_id"], status=data["status"]))
     return out
+
+
+def set_finding_status(session, finding_id, status):
+    """Advance a finding's status and record an identifier-free fact in the tracker.
+
+    The dashboard is the entry to the action layer; tapping a row's action moves it
+    through pending -> action_taken -> confirmed_removed. The existing CLI tracker
+    logs only the kind + new status — never any identifier.
+    """
+    if status not in findings.STATUSES:
+        raise ValueError("invalid status: %r" % status)
+    for f in load_findings(session):
+        if f.finding_id == finding_id:
+            updated = findings.Finding(
+                finding_id=f.finding_id, kind=f.kind, source=f.source,
+                severity=f.severity, what_was_found=f.what_was_found,
+                remediation_action=f.remediation_action,
+                scan_run_id=f.scan_run_id, status=status)
+            payload = json.dumps({
+                "finding_id": updated.finding_id, "kind": updated.kind,
+                "source": updated.source, "severity": updated.severity,
+                "what_was_found": updated.what_was_found,
+                "remediation_action": updated.remediation_action,
+                "scan_run_id": updated.scan_run_id, "status": updated.status,
+            }, sort_keys=True).encode("utf-8")
+            ad = _finding_aad(session.user_id, finding_id)
+            blob = crypto.seal_record(payload, session.master_key, ad)
+            store.update_finding(session.user_id, finding_id, blob)
+            cli_db.log("finding.status", "kind=%s -> %s" % (f.kind, status))
+            return True
+    return False

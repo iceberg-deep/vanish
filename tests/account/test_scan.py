@@ -83,3 +83,19 @@ def test_stored_findings_are_ciphertext(registered):
     loaded = scan.load_findings(registered.session)
     assert loaded and loaded[0].kind == "discoverable_account"
     assert set(loaded[0].what_was_found) == {"platform"}
+
+
+def test_status_flow_updates_finding_and_tracker(registered):
+    _verify(registered, "owner@me.com")
+    brokers = [{"name": "Spokeo", "category": "people-search",
+                "opt_out_url": "https://spokeo/optout"}]
+    scan.scan(registered.session, sources=_sources(brokers=brokers), persist=True)
+    fid = scan.load_findings(registered.session)[0].finding_id
+
+    assert scan.set_finding_status(registered.session, fid, "confirmed_removed")
+    assert scan.load_findings(registered.session)[0].status == "confirmed_removed"
+    # the identifier-free CLI tracker recorded the fact (kind + status only)
+    from vanish import db as cli_db
+    actions = [r["action"] for r in cli_db._connect().execute(
+        "SELECT action FROM audit_log").fetchall()]
+    assert "finding.status" in actions
