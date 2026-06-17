@@ -135,6 +135,18 @@ def get_account(user_id):
     return d
 
 
+def account_ids():
+    """All account ids on this device. Single-operator: expected to be 0 or 1."""
+    init_db()
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT user_id FROM accounts ORDER BY created_at").fetchall()
+    finally:
+        conn.close()
+    return [r["user_id"] for r in rows]
+
+
 def update_wrapped_password(user_id, salt_pw, auth_verifier, wrapped_password):
     """Re-wrap after a password change: only the wrapper + verifier change."""
     conn = _connect()

@@ -18,6 +18,39 @@ vanish helps you:
 2. **Generate** CCPA / GDPR / generic removal-request letters to data brokers — for yourself, or (statelessly) as an authorized agent for someone who asked.
 3. **Track** your own opt-outs and find the official links to delete or deactivate accounts.
 
+## Authenticated-user app (`vanish-account`) — experimental, single-operator
+
+> **SINGLE_OPERATOR · LOCAL ONLY · NOT FOR DISTRIBUTION.** The `vanish/account/`
+> package is a local-first, zero-knowledge evolution of the CLI: a per-user account,
+> verified-identifier ownership, a self-scan engine, and a removal-worklist dashboard
+> — all on your own device. It is for **personal use by one operator on one machine**.
+>
+> - **Pre-external-review crypto.** The auth envelope follows `CRYPTO-SPEC.md` but the
+>   cryptographer review is **not** complete, and the Argon2id parameters are
+>   provisional (`crypto.DEFAULT_KDF_PARAMS` is `reviewed: False`). Do not treat it as
+>   security-certified.
+> - **One local user.** `register` refuses a second account; there is no hosted server,
+>   no network sync, no multi-tenant path. The dashboard is a static file you serve on
+>   `127.0.0.1` yourself.
+> - **Multi-user / hosted / public use is gated** on the Phase 0 cryptographer **and**
+>   legal reviews (see `ROADMAP.md`, `BLUEPRINT.md` §10). The moment other people log
+>   in, the data-broker-registration question is the gate.
+>
+> It carries every invariant the CLI does — self-only scanning (`assert_scannable`),
+> dossier-impossibility (no profile/identity type; OSINT fields dropped at ingestion),
+> zero-knowledge at rest, identifier-ephemeral letters, and tool-not-agent.
+>
+> ```
+> vanish-account register
+> vanish-account verify-email you@example.com    # confirm the token it prints
+> vanish-account confirm-email <token>
+> vanish-account scan
+> vanish-account worklist
+> vanish-account export-dashboard                # writes ~/vanish-dashboard/
+> #   then: cd ~/vanish-dashboard && python3 -m http.server 8000 --bind 127.0.0.1
+> #   open http://127.0.0.1:8000/vanish-dashboard.html
+> ```
+
 ## Scope — vanish removes, it never discovers
 
 The organizing principle: everything in vanish serves getting data *out*. Anything that finds, maps, or builds a standing record of people is out of scope — even when it sounds helpful. These limits are enforced in the code, not just promised:
