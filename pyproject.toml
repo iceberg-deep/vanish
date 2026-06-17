@@ -18,12 +18,14 @@ dev = ["pytest>=7.0"]
 
 [project.scripts]
 vanish = "vanish.cli:main"
+vanish-account = "vanish.account.runner:main"
 
 [tool.setuptools]
 packages = ["vanish", "vanish.account"]
 
 [tool.setuptools.package-data]
 vanish = ["data/*.json"]
+"vanish.account" = ["*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

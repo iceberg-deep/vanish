@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vanish — your removal worklist</title>
+<!--
+  vanish — local removal-worklist dashboard
+  ─────────────────────────────────────────────────────────────────────────
+  SINGLE OPERATOR · LOCAL ONLY · NOT FOR DISTRIBUTION
+  • Renders findings as a prioritised list of things to REMOVE. It is a
+    worklist, not a profile. There is deliberately no identity graph, no
+    linked-account correlation, no node-edge map of a person. Findings are
+    grouped only by remediation category (breach / broker / account).
+  • No network calls, no external fonts/CDN, no analytics, no storage of
+    your data. Everything is in-memory in this page.
+  • It loads vanish-findings.json (your real scan export) from alongside this
+    file if present (served over localhost), else shows sample rows.
+  ─────────────────────────────────────────────────────────────────────────
+-->
+<style>
+  :root{
+    --bg:#0a0b0f; --panel:#12141c; --panel2:#171a24; --line:#232735;
+    --txt:#e7e9f0; --dim:#8b90a3; --dimmer:#5c6076;
+    --hi:#ff5c5c; --hi-dim:#3a1f25;
+    --med:#ffb454; --med-dim:#3a2e1a;
+    --lo:#5cc8ff; --lo-dim:#16303d;
+    --ok:#46d39a; --ok-dim:#13312a;
+    --accent:#7c6cff;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.45}
+  .wrap{max-width:920px;margin:0 auto;padding:28px 18px 80px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.5px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--hi);
+    box-shadow:0 0 12px var(--hi)}
+  .brand small{font-weight:500;color:var(--dim);font-size:12px;letter-spacing:0}
+  .who{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .who b{color:var(--txt);font-weight:600}
+
+  .banner{display:flex;gap:10px;align-items:flex-start;background:var(--hi-dim);
+    border:1px solid #5a2b32;border-radius:10px;padding:10px 14px;margin-bottom:24px;
+    font-size:12.5px;color:#f0c5c5}
+  .banner b{color:#ffd9d9}
+
+  /* exposure summary */
+  .summary{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:680px){.summary{grid-template-columns:1fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .score .label{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+  .score .num{font-size:40px;font-weight:800;line-height:1;margin:8px 0 10px;font-family:var(--mono)}
+  .bar{height:8px;border-radius:6px;background:var(--panel2);overflow:hidden}
+  .bar > i{display:block;height:100%;border-radius:6px;
+    background:linear-gradient(90deg,var(--lo),var(--med),var(--hi))}
+  .tile .t-top{display:flex;align-items:center;justify-content:space-between}
+  .tile .t-num{font-size:30px;font-weight:800;font-family:var(--mono)}
+  .tile .t-kind{font-size:12.5px;color:var(--dim)}
+  .tile .t-verb{font-size:11.5px;margin-top:8px;color:var(--dimmer);text-transform:uppercase;letter-spacing:.8px}
+  .pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
+  .pill.b{background:var(--hi-dim);color:var(--hi)}
+  .pill.k{background:var(--med-dim);color:var(--med)}
+  .pill.a{background:var(--lo-dim);color:var(--lo)}
+
+  .progress-note{font-size:12.5px;color:var(--dim);margin:18px 2px 8px}
+  .progress-note b{color:var(--ok)}
+
+  /* worklist */
+  .group{margin-top:26px}
+  .group h2{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);
+    margin:0 0 12px;display:flex;align-items:center;gap:10px}
+  .group h2 .count{font-family:var(--mono);color:var(--dimmer)}
+  .rows{display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;align-items:center;gap:14px;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:14px 16px;transition:border-color .15s}
+  .row:hover{border-color:#33384a}
+  .row.done{opacity:.55}
+  .sev{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .sev.high{background:var(--hi);box-shadow:0 0 8px var(--hi)}
+  .sev.medium{background:var(--med);box-shadow:0 0 8px var(--med)}
+  .sev.low{background:var(--lo)}
+  .row .main{flex:1;min-width:0}
+  .row .src{font-weight:650;font-size:15px}
+  .row .desc{font-size:12.5px;color:var(--dim);margin-top:2px}
+  .row .sevtag{font-size:10.5px;font-family:var(--mono);text-transform:uppercase;
+    letter-spacing:.8px;padding:1px 7px;border-radius:5px;margin-left:8px;vertical-align:middle}
+  .sevtag.high{background:var(--hi-dim);color:var(--hi)}
+  .sevtag.medium{background:var(--med-dim);color:var(--med)}
+  .sevtag.low{background:var(--lo-dim);color:var(--lo)}
+  .row .act{flex:0 0 auto;display:flex;align-items:center;gap:10px}
+  .btn{font-family:var(--sans);font-size:13px;font-weight:600;border:1px solid #33384a;
+    background:var(--panel2);color:var(--txt);padding:8px 14px;border-radius:9px;cursor:pointer;
+    transition:background .15s,border-color .15s}
+  .btn:hover{background:#1e2230;border-color:#454b60}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .status{font-size:11.5px;font-family:var(--mono);color:var(--dimmer);min-width:74px;text-align:right}
+  .status.done{color:var(--ok)}
+  .status.acted{color:var(--med)}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(4,5,8,.72);display:none;
+    align-items:center;justify-content:center;padding:18px;z-index:50}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    max-width:640px;width:100%;max-height:86vh;overflow:auto;padding:22px 24px}
+  .modal h3{margin:0 0 4px;font-size:18px}
+  .modal .sub{font-size:12.5px;color:var(--dim);margin-bottom:16px}
+  .modal pre{background:#0c0d13;border:1px solid var(--line);border-radius:10px;
+    padding:14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;
+    color:#d6d9e6;max-height:340px;overflow:auto}
+  .modal .lnk{font-family:var(--mono);font-size:13px;color:var(--lo);word-break:break-all}
+  .modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+  .x{background:none;border:none;color:var(--dim);font-size:22px;cursor:pointer;float:right;
+    line-height:1;margin:-4px -6px 0 0}
+  .muted{color:var(--dimmer);font-size:11.5px;margin-top:14px}
+  .foot{margin-top:40px;text-align:center;color:var(--dimmer);font-size:11.5px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand"><span class="dot"></span>vanish <small>removal worklist</small></div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <div class="banner">
+    <span>🔒</span>
+    <div><b>Single-operator · local-only.</b> This is a worklist of things to remove from your
+    own footprint — not a profile, not an identity graph. No data leaves this page; there are no
+    network calls. Crypto is pre-external-review; personal use only, not for distribution.</div>
+  </div>
+
+  <!-- exposure summary (counts only — never a person-graph) -->
+  <section class="summary">
+    <div class="card score">
+      <div class="label">Exposure</div>
+      <div class="num" id="score">—</div>
+      <div class="bar"><i id="scorebar" style="width:0%"></i></div>
+    </div>
+    <div class="card tile">
+      <div class="t-top"><span class="t-num" id="c-breach">0</span><span class="pill b">breach</span></div>
+      <div class="t-kind">breach exposures</div>
+      <div class="t-verb">rotate credentials</div>
+    </div>
+    <div class="card tile">
+      <div class="t-top"><span class="t-num" id="c-broker">0</span><span class="pill k">broker</span></div>
+      <div class="t-kind">broker listings</div>
+      <div class="t-verb">opt out / remove</div>
+    </div>
+    <div class="card tile">
+      <div class="t-top"><span class="t-num" id="c-acct">0</span><span class="pill a">account</span></div>
+      <div class="t-kind">discoverable accounts</div>
+      <div class="t-verb">lock / delete</div>
+    </div>
+  </section>
+
+  <div class="progress-note" id="progress"></div>
+
+  <!-- worklist groups injected here -->
+  <div id="worklist"></div>
+
+  <div class="foot">
+    vanish · local removal tool · serve this folder over 127.0.0.1 to load your real scan export<br>
+    no identity graph · no linked-account correlation · grouped by remediation category only
+  </div>
+</div>
+
+<!-- action modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="x" onclick="closeModal()">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ───────────────────────────────────────────────────────────────────────────
+   FINDINGS
+   Each object mirrors the vanish `Finding` type: flat, independent, action-bound.
+   what_was_found is intentionally minimal (enough to motivate the action).
+   There is NO identity field, NO links between findings, NO graph. The real set
+   is loaded from vanish-findings.json (export_dashboard.write); the sample below
+   is only a fallback so the file is viewable on its own.
+   ─────────────────────────────────────────────────────────────────────────── */
+let OPERATOR = "you@local";
+let DATA_MODE = "sample"; // 'sample' | 'live'
+
+const SAMPLE_FINDINGS = [
+  // kind: breach_exposure | broker_listing | discoverable_account
+  { finding_id:"f1", kind:"breach_exposure", source:"MegaLeak 2024", severity:"high",
+    what_was_found:{exposed:["email","passwords"]},
+    remediation:{type:"guidance",
+      text:"Your email appears in this breach with exposed passwords. Rotate the password on this account immediately and anywhere you reused it. Enable a password manager + 2FA."} },
+
+  { finding_id:"f2", kind:"breach_exposure", source:"ForumDump", severity:"medium",
+    what_was_found:{exposed:["email"]},
+    remediation:{type:"guidance",
+      text:"Your email (no password) appears in this breach. No action required beyond awareness, but watch for targeted phishing referencing this site."} },
+
+  { finding_id:"f3", kind:"broker_listing", source:"Spokeo", severity:"medium",
+    what_was_found:{site:"people-search"},
+    remediation:{type:"letter", url:"https://www.spokeo.com/optout", template:"ccpa"} },
+
+  { finding_id:"f4", kind:"broker_listing", source:"Whitepages", severity:"medium",
+    what_was_found:{site:"people-search"},
+    remediation:{type:"letter", url:"https://www.whitepages.com/suppression-requests", template:"ccpa"} },
+
+  { finding_id:"f5", kind:"broker_listing", source:"BeenVerified", severity:"low",
+    what_was_found:{site:"people-search"},
+    remediation:{type:"letter", url:"https://www.beenverified.com/app/optout/search", template:"ccpa"} },
+
+  { finding_id:"f6", kind:"discoverable_account", source:"Instagram", severity:"low",
+    what_was_found:{platform:"instagram"},
+    remediation:{type:"link", url:"https://www.instagram.com/accounts/remove/request/permanent/",
+      steps:"Log in, choose a reason, re-enter password, Delete. ~30-day grace period."} },
+
+  { finding_id:"f7", kind:"discoverable_account", source:"Adobe", severity:"low",
+    what_was_found:{platform:"adobe"},
+    remediation:{type:"link", url:"https://account.adobe.com/",
+      steps:"Account > Plans & Privacy > Delete account. Cancel active plans first."} },
+];
+
+// FINDINGS is resolved at startup: live export if present, else sample.
+let FINDINGS = SAMPLE_FINDINGS;
+
+// status lives only in-memory for this local session
+const status = {}; // finding_id -> 'pending' | 'action_taken' | 'confirmed_removed'
+
+/* Load the real scan output exported by export_dashboard.write():
+   a sibling file `vanish-findings.json`. If it isn't there (or we're opened
+   via file:// where fetch is blocked), fall back to the sample rows and say so.
+   Only the dossier-free Finding fields are read. */
+async function loadData(){
+  try{
+    const res = await fetch("vanish-findings.json", {cache:"no-store"});
+    if(!res.ok) throw new Error("no export");
+    const data = await res.json();
+    if(!Array.isArray(data.findings)) throw new Error("bad shape");
+    FINDINGS = data.findings;
+    OPERATOR = data.operator || OPERATOR;
+    DATA_MODE = "live";
+  }catch(e){
+    FINDINGS = SAMPLE_FINDINGS;
+    DATA_MODE = "sample";
+  }
+  for(const k in status) delete status[k];
+  FINDINGS.forEach(f => status[f.finding_id] = f.status || "pending");
+}
+
+/* letter generator — mirrors requests_gen.render(); identifiers are filled at
+   render time and never stored anywhere. Edit NAME/EMAIL to your own for a real letter. */
+const SENDER = { name:"[Your Name]", email:"[your@email]" };
+
+function ccpaLetter(brokerName, name, email){
+  const today = new Date().toISOString().slice(0,10);
+  return `Date: ${today}
+
+To: Privacy / Data Protection Officer, ${brokerName}
+
+Subject: CCPA/CPRA Request to Delete and Opt Out of Sale/Sharing of Personal Information
+
+To Whom It May Concern,
+
+I am a California consumer submitting this request under the California Consumer
+Privacy Act (Cal. Civ. Code 1798.100 et seq.), as amended by the CPRA. I am the
+consumer whose personal information is at issue and I am exercising my own rights.
+
+I request that ${brokerName}:
+  1. DISCLOSE the specific pieces of personal information collected about me.
+  2. DELETE all personal information you have collected about me.
+  3. OPT ME OUT of any sale or sharing of my personal information.
+  4. SUPPRESS my record so it does not reappear in future data sets.
+
+Identifying information for verification:
+  Full name: ${name}
+  Email: ${email}
+
+Please confirm completion in writing.
+
+Sincerely,
+${name}`;
+}
+
+/* ── rendering ────────────────────────────────────────────────────────────── */
+const KINDS = [
+  { key:"breach_exposure",      title:"Breaches — rotate credentials", verb:"breach" },
+  { key:"broker_listing",       title:"Broker listings — opt out",      verb:"broker" },
+  { key:"discoverable_account", title:"Discoverable accounts — lock or delete", verb:"account" },
+];
+const SEV_RANK = { high:0, medium:1, low:2 };
+
+function counts(){
+  const c = { breach_exposure:0, broker_listing:0, discoverable_account:0, done:0 };
+  FINDINGS.forEach(f => { c[f.kind]++; if(status[f.finding_id]==="confirmed_removed") c.done++; });
+  return c;
+}
+
+function computeScore(){
+  // simple count-derived exposure score (NOT a person-profile) — open findings weighted by severity
+  let s = 0;
+  FINDINGS.forEach(f => {
+    if(status[f.finding_id]==="confirmed_removed") return;
+    s += f.severity==="high"?14 : f.severity==="medium"?7 : 3;
+  });
+  return Math.min(99, s);
+}
+
+function render(){
+  document.getElementById("who").innerHTML =
+    `operator <b>${OPERATOR}</b> · ${DATA_MODE==="live"
+      ? '<span style="color:var(--ok)">live scan</span>'
+      : '<span style="color:var(--med)">sample data</span>'}`;
+  const c = counts();
+  document.getElementById("c-breach").textContent = c.breach_exposure;
+  document.getElementById("c-broker").textContent = c.broker_listing;
+  document.getElementById("c-acct").textContent  = c.discoverable_account;
+
+  const score = computeScore();
+  document.getElementById("score").textContent = score;
+  document.getElementById("scorebar").style.width = score + "%";
+
+  const total = FINDINGS.length;
+  document.getElementById("progress").innerHTML =
+    `<b>${c.done}</b> of ${total} removed · ${total - c.done} remaining on your worklist`;
+
+  const wl = document.getElementById("worklist");
+  wl.innerHTML = "";
+  KINDS.forEach(g => {
+    const items = FINDINGS.filter(f => f.kind === g.key)
+                          .sort((a,b)=>SEV_RANK[a.severity]-SEV_RANK[b.severity]);
+    if(!items.length) return;
+    const sec = document.createElement("div");
+    sec.className = "group";
+    sec.innerHTML = `<h2>${g.title} <span class="count">${items.length}</span></h2>`;
+    const rows = document.createElement("div");
+    rows.className = "rows";
+    items.forEach(f => rows.appendChild(rowEl(f)));
+    sec.appendChild(rows);
+    wl.appendChild(sec);
+  });
+}
+
+function actionLabel(f){
+  if(f.remediation.type==="letter") return "Generate letter";
+  if(f.remediation.type==="link")   return "Open removal";
+  return "View guidance";
+}
+
+function rowEl(f){
+  const st = status[f.finding_id];
+  const row = document.createElement("div");
+  row.className = "row" + (st==="confirmed_removed" ? " done" : "");
+  const desc = describe(f);
+  const statusTxt = st==="confirmed_removed" ? "✓ removed"
+                  : st==="action_taken" ? "● actioned" : "○ pending";
+  const statusCls = st==="confirmed_removed" ? "done" : st==="action_taken" ? "acted" : "";
+  row.innerHTML = `
+    <span class="sev ${f.severity}"></span>
+    <div class="main">
+      <span class="src">${f.source}</span>
+      <span class="sevtag ${f.severity}">${f.severity}</span>
+      <div class="desc">${desc}</div>
+    </div>
+    <div class="act">
+      <span class="status ${statusCls}" id="st-${f.finding_id}">${statusTxt}</span>
+      <button class="btn primary" data-act="${f.finding_id}">${actionLabel(f)}</button>
+    </div>`;
+  row.querySelector("[data-act]").addEventListener("click",()=>openAction(f));
+  return row;
+}
+
+function describe(f){
+  if(f.kind==="breach_exposure"){
+    const ex = (f.what_was_found.exposed||[]).join(", ");
+    return `Email found in this breach${ex?` · exposed: ${ex}`:""}`;
+  }
+  if(f.kind==="broker_listing") return `Listed on this people-search site`;
+  if(f.kind==="discoverable_account") return `An account tied to your email exists here`;
+  return "";
+}
+
+/* ── action modal ─────────────────────────────────────────────────────────── */
+const modal = document.getElementById("modal");
+function openAction(f){
+  const body = document.getElementById("modal-body");
+  const r = f.remediation;
+  let html = `<h3>${f.source}</h3><div class="sub">${describe(f)}</div>`;
+
+  if(r.type==="letter"){
+    const letter = ccpaLetter(f.source, SENDER.name, SENDER.email);
+    html += `<pre id="letter">${escapeHtml(letter)}</pre>
+      <div class="lnk">Submit at: ${r.url}</div>
+      <div class="muted">Identifiers are filled in to render this letter and are not stored
+      anywhere. Edit SENDER in the file to use your real name/email.</div>
+      <div class="actions">
+        <button class="btn" onclick="copyLetter()">Copy letter</button>
+        <button class="btn" onclick="openUrl('${r.url}')">Open opt-out page</button>
+        <button class="btn primary" onclick="mark('${f.finding_id}')">Mark removed</button>
+      </div>`;
+  } else if(r.type==="link"){
+    html += `<div class="lnk">${r.url}</div>
+      <div class="muted">${r.steps||""}</div>
+      <div class="actions">
+        <button class="btn" onclick="openUrl('${r.url}')">Open deletion flow</button>
+        <button class="btn primary" onclick="mark('${f.finding_id}')">Mark removed</button>
+      </div>`;
+  } else {
+    html += `<pre>${escapeHtml(r.text)}</pre>
+      <div class="actions">
+        <button class="btn primary" onclick="mark('${f.finding_id}')">Mark handled</button>
+      </div>`;
+  }
+  body.innerHTML = html;
+  modal.classList.add("open");
+  // tapping a row's action advances pending -> action_taken (Phase 3 status flow)
+  if(status[f.finding_id]==="pending"){ status[f.finding_id]="action_taken"; refreshStatus(f.finding_id); }
+}
+function refreshStatus(id){
+  const el = document.getElementById("st-"+id); if(!el) return;
+  const st = status[id];
+  el.textContent = st==="confirmed_removed" ? "✓ removed" : st==="action_taken" ? "● actioned" : "○ pending";
+  el.className = "status " + (st==="confirmed_removed"?"done":st==="action_taken"?"acted":"");
+}
+function mark(id){ status[id]="confirmed_removed"; closeModal(); render(); }
+function closeModal(){ modal.classList.remove("open"); }
+function openUrl(u){ window.open(u, "_blank", "noopener"); }
+function copyLetter(){
+  const t = document.getElementById("letter").textContent;
+  navigator.clipboard?.writeText(t);
+}
+function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m])); }
+modal.addEventListener("click",e=>{ if(e.target===modal) closeModal(); });
+
+// startup: load real export if present, else sample, then render
+loadData().then(render);
+</script>
+</body>
+</html>
