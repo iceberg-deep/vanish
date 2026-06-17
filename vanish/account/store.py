@@ -249,3 +249,16 @@ def list_findings(user_id):
     finally:
         conn.close()
     return [dict(r) for r in rows]
+
+
+def update_finding(user_id, finding_id, finding_encrypted):
+    """Replace a finding's ciphertext (e.g. after a status change)."""
+    conn = _connect()
+    try:
+        cur = conn.execute(
+            "UPDATE findings SET finding_encrypted = ? WHERE user_id = ? AND "
+            "finding_id = ?", (finding_encrypted, user_id, finding_id))
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        conn.close()
