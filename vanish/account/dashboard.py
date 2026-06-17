@@ -34,7 +34,8 @@ _HEADLINE = {
     "discoverable_account": "%d discoverable accounts to lock",
 }
 _SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-_STATUS_ORDER = {"pending": 0, "action_taken": 1, "confirmed_removed": 2}
+# relisted = came back after removal: most urgent, sorts first.
+_STATUS_ORDER = {"relisted": 0, "pending": 1, "action_taken": 2, "confirmed_removed": 3}
 
 # The exact, complete set of Finding fields the view is allowed to surface.
 ROW_FIELDS = ("kind", "source", "severity", "status",

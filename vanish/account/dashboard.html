@@ -358,8 +358,10 @@ function rowEl(f){
   row.className = "row" + (st==="confirmed_removed" ? " done" : "");
   const desc = describe(f);
   const statusTxt = st==="confirmed_removed" ? "✓ removed"
+                  : st==="relisted" ? "⟳ relisted"
                   : st==="action_taken" ? "● actioned" : "○ pending";
-  const statusCls = st==="confirmed_removed" ? "done" : st==="action_taken" ? "acted" : "";
+  const statusCls = st==="confirmed_removed" ? "done"
+                  : (st==="relisted"||st==="action_taken") ? "acted" : "";
   row.innerHTML = `
     <span class="sev ${f.severity}"></span>
     <div class="main">
@@ -424,8 +426,11 @@ function openAction(f){
 function refreshStatus(id){
   const el = document.getElementById("st-"+id); if(!el) return;
   const st = status[id];
-  el.textContent = st==="confirmed_removed" ? "✓ removed" : st==="action_taken" ? "● actioned" : "○ pending";
-  el.className = "status " + (st==="confirmed_removed"?"done":st==="action_taken"?"acted":"");
+  el.textContent = st==="confirmed_removed" ? "✓ removed"
+                 : st==="relisted" ? "⟳ relisted"
+                 : st==="action_taken" ? "● actioned" : "○ pending";
+  el.className = "status " + (st==="confirmed_removed" ? "done"
+                 : (st==="relisted"||st==="action_taken") ? "acted" : "");
 }
 function mark(id){ status[id]="confirmed_removed"; closeModal(); render(); }
 function closeModal(){ modal.classList.remove("open"); }

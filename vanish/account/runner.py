@@ -110,10 +110,14 @@ def cmd_scan(args):
         print("No verified identifiers yet. Add one:  vanish-account verify-email "
               "you@example.com")
         return 0
-    results = scan.scan(session)
-    counts = findings.counts_by_kind(results)
-    print("Scanned %d verified identifier(s). Findings: %s (total %d)."
-          % (len(targets), counts, sum(counts.values())))
+    fresh = scan.collect(session)
+    summary = scan.reconcile(session, fresh)
+    print("Scanned %d verified identifier(s). new=%d · relisted=%d · already-open=%d "
+          "· stayed-removed=%d" % (len(targets), summary["new"], summary["relisted"],
+                                   summary["open"], summary["kept_removed"]))
+    if summary["relisted"]:
+        print("  ! %d item(s) you'd removed have reappeared (relisted) — re-remove them."
+              % summary["relisted"])
     print("View them:  vanish-account worklist")
     return 0
 

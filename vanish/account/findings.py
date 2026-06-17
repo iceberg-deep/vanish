@@ -23,7 +23,9 @@ import uuid
 from dataclasses import dataclass
 
 KINDS = ("breach_exposure", "broker_listing", "discoverable_account")
-STATUSES = ("pending", "action_taken", "confirmed_removed")
+# relisted: a previously confirmed-removed item that a presence-confirming re-scan
+# found again (the broker/account put you back). See scan.reconcile.
+STATUSES = ("pending", "action_taken", "confirmed_removed", "relisted")
 
 # Anything dossier-shaped. Keys matching these (case-insensitive) are stripped from
 # any source payload at ingestion and rejected if found on a Finding.
