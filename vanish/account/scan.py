@@ -140,21 +140,90 @@ def scan_target(session, identifier_type, identifier_value, run_id, sources=None
     return out
 
 
-def scan(session, sources=None, persist=True):
-    """Scan the user's whole verified set. Returns a flat list[Finding].
+# Sources whose output actually re-confirms PRESENCE (so a previously-removed item
+# reappearing means the broker/account genuinely put you back -> relisted). The static
+# broker registry is a worklist, NOT a presence probe, so "registry" is deliberately
+# absent: re-scanning the registry must never spuriously relist a broker you removed.
+# A breach is historical and never relists. Extend this only with real presence checks.
+PRESENCE_CONFIRMING_SOURCES = frozenset({"account-existence"})
+
+
+def collect(session, sources=None):
+    """Build this run's findings WITHOUT persisting. Returns a flat list[Finding].
 
     Iterates ONLY identity.scannable_identifiers(session) — no external identifier can
-    enter. Findings are encrypted before storage when persist=True.
+    enter (every target passes the assert_scannable gate inside scan_target).
     """
     run_id = uuid.uuid4().hex
     results = []
     for identifier_type, value in identity.scannable_identifiers(session):
         results.extend(
             scan_target(session, identifier_type, value, run_id, sources))
-    if persist:
-        for f in results:
-            store_finding(session, f)
     return results
+
+
+def finding_key(f):
+    """A stable cross-run key for ONE finding (the broker/breach/account it targets).
+
+    This dedups a finding against its OWN prior versions across scans — it does NOT
+    link different findings to each other or to a person. (broker_listing:spokeo is the
+    same removal task this week as last week; that is all this encodes.)
+    """
+    w = f.what_was_found or {}
+    if f.kind == "broker_listing":
+        descriptor = w.get("broker_name", "")
+    elif f.kind == "discoverable_account":
+        descriptor = w.get("platform", "")
+    elif f.kind == "breach_exposure":
+        descriptor = w.get("breach_name", "")
+    else:
+        descriptor = ""
+    return "%s:%s" % (f.kind, str(descriptor).strip().lower())
+
+
+def reconcile(session, fresh):
+    """Reconcile a fresh scan against stored findings. Returns a summary dict.
+
+    Idempotent: a finding already on file is not duplicated. The relist rule:
+      * fresh item matches a CONFIRMED_REMOVED stored item, AND the fresh item came
+        from a presence-confirming source  -> the item came back: mark it `relisted`.
+      * matches a confirmed-removed item from a non-presence source (e.g. the registry
+        worklist) -> it stays removed (we cannot honestly claim a relist).
+      * matches an open item -> kept as-is (no duplicate).
+      * no match -> inserted (pending).
+    """
+    by_key = {}
+    for sf in load_findings(session):
+        by_key[finding_key(sf)] = sf
+    summary = {"new": 0, "relisted": 0, "open": 0, "kept_removed": 0}
+    for nf in fresh:
+        key = finding_key(nf)
+        sf = by_key.get(key)
+        if sf is None:
+            store_finding(session, nf)
+            by_key[key] = nf          # dedup within this same batch too
+            summary["new"] += 1
+        elif sf.status == "confirmed_removed":
+            if nf.source in PRESENCE_CONFIRMING_SOURCES:
+                set_finding_status(session, sf.finding_id, "relisted")
+                summary["relisted"] += 1
+            else:
+                summary["kept_removed"] += 1
+        else:
+            summary["open"] += 1
+    return summary
+
+
+def scan(session, sources=None, persist=True):
+    """Scan the user's whole verified set. Returns the fresh list[Finding].
+
+    When persist=True the run is reconciled into the stored set (idempotent +
+    presence-gated relist); inspect the stored state with load_findings().
+    """
+    fresh = collect(session, sources)
+    if persist:
+        reconcile(session, fresh)
+    return fresh
 
 
 # --- encrypted-at-rest storage -------------------------------------------- #
