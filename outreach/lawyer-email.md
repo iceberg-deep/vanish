@@ -35,5 +35,4 @@ A few logistics:
 Thanks very much — I've tried to make the questions specific so they're efficient to answer. Glad to set up a short call.
 
 Best,
-Justen Phillips
-justen.phillips88@gmail.com
+Iceberg
