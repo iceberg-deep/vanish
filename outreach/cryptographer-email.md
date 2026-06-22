@@ -36,5 +36,4 @@ A few logistics:
 Thanks for considering it — I've tried to make the scope precise and respect your time. Glad to hop on a short call if that's easier.
 
 Best,
-Justen Phillips
-justen.phillips88@gmail.com
+Iceberg
